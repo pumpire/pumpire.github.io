@@ -1,0 +1,26 @@
+Third-party resources
+
+Keep this file and the bundled license notices when redistributing the site.
+
+- **Google Sans** — Google Sans Project Authors.
+  Source: https://github.com/googlefonts/googlesans.
+  License: `fonts/GOOGLE-SANS-OFL.txt`.
+- **Noto Sans** — Noto Project Authors.
+  Source: https://github.com/notofonts/latin-greek-cyrillic.
+  License: `fonts/NOTO-SANS-OFL.txt`.
+- **KaTeX styles and fonts** — Khan Academy and other contributors.
+  Source: https://github.com/KaTeX/KaTeX.
+  License: `vendor/katex/LICENSE`.
+- **arXiv icon** — Academicons by James Walsh.
+  Source: https://github.com/jpswalsh/academicons.
+  Notice: `icons/ACADEMICONS-NOTICE.txt`; original metadata is retained in the SVG.
+- **GitHub icon** — Font Awesome by Fonticons, Inc.
+  Source: https://github.com/FortAwesome/Font-Awesome.
+  License: `icons/FONT-AWESOME-LICENSE.txt`; original attribution is retained in the SVG.
+- **Hugging Face logo** — Hugging Face.
+  Source: https://huggingface.co/front/assets/huggingface_logo-noborder.svg.
+
+
+Layout references: PhysBench (https://physbench.github.io/),
+WorldScore (https://haoyi-duan.github.io/WorldScore/), and
+Depth Anything V2 (https://depth-anything-v2.github.io/).

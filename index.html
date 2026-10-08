@@ -1,0 +1,834 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Pumpire: a unified benchmark for metric point-pair distance estimation. 100 real-world scenes, 6,400 frames, and 29 baseline configurations across image- and video-level 3D models.">
+  <meta name="theme-color" content="#ffffff">
+  <meta property="og:title" content="Pumpire: Unified Benchmark for Metric Distance Estimation">
+  <meta property="og:description" content="Evaluating physical scale in reconstructed 3D space with physically measured point-pair distances.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="assets/images/pipeline.webp">
+  <title>Pumpire: Unified Benchmark for Metric Distance Estimation</title>
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=a1ba2989f19c">
+  <link rel="stylesheet" href="assets/fonts/fonts.css">
+  <link rel="stylesheet" href="assets/vendor/katex/katex.min.css">
+  <link rel="stylesheet" href="assets/style.css">
+  <script src="assets/links.js" defer></script>
+  <script src="assets/page.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#abstract">Skip to content</a>
+
+  <main id="top">
+    <header class="publication-header">
+      <div class="container">
+        <h1><span class="project-name"><img class="project-logo" src="assets/pumpire-logo.svg" alt="" width="90" height="80"><span>Pumpire</span></span><span class="publication-subtitle">Unified Benchmark for Metric Distance Estimation</span></h1>
+        <div class="publication-authors" aria-label="Authors">
+          <span>Siyu Chen<sup>1,*</sup></span><span>Zehan Wang<sup>1,*,†</sup></span><span>Jiayang Xu<sup>1,*</sup></span><span>Yihan Wu<sup>2</sup></span><span>Jialei Wang<sup>1</sup></span><br class="desktop-break">
+          <span>Junming Chen<sup>1</sup></span><span>Ziang Zhang<sup>1</sup></span><span>Yutong Ying<sup>3</sup></span><span>Zhou Zhao<sup>1,‡</sup></span>
+        </div>
+        <div class="affiliations"><span><sup>1</sup>Zhejiang University</span><span><sup>2</sup>Zhejiang University of Technology</span><span><sup>3</sup>Shanghai Jiaotong University</span></div>
+        <p class="author-notes"><span><sup>*</sup>Equal contribution</span><span><sup>†</sup>Project leader</span><span><sup>‡</sup>Corresponding author</span></p>
+        <div class="publication-links" aria-label="Project resources">
+          <a class="resource-link" data-resource="paper" role="link" aria-disabled="true" title="Paper link coming soon"><span class="resource-icon" aria-hidden="true"><img src="assets/icons/arxiv.svg" alt="" width="16" height="16"></span><span>Paper</span></a>
+          <a class="resource-link" data-resource="code" role="link" aria-disabled="true" title="Code link coming soon"><span class="resource-icon" aria-hidden="true"><img src="assets/icons/github.svg" alt="" width="16" height="16"></span><span>Code</span></a>
+          <a class="resource-link" data-resource="data" role="link" aria-disabled="true" title="Dataset link coming soon"><span class="resource-icon resource-icon-dataset" aria-hidden="true"><img src="assets/icons/huggingface.svg" alt="" width="20" height="20"></span><span>Dataset</span></a>
+        </div>
+      </div>
+    </header>
+
+    <section class="section benchmark-section" id="pumpire" aria-label="Pumpire evaluation protocol">
+      <div class="container">
+        <div class="protocol-overview" aria-label="Pumpire evaluation protocol">
+          <figure class="paper-figure pipeline-figure">
+            <a class="figure-link" href="assets/images/pipeline.webp" data-lightbox aria-label="Enlarge the Pumpire evaluation pipeline"><img src="assets/images/pipeline.webp" alt="Pumpire pipeline: RGB views and optional depth priors enter image- or video-level models. Predicted depth and associated camera intrinsics are used for back-projection, then the point-pair distance is compared with the physically measured distance." width="2600" height="716" loading="lazy" decoding="async"></a>
+            <figcaption>
+              <p><strong>Overview of the Pumpire evaluation protocol.</strong> Pumpire provides a unified evaluation of image- and video-level 3D foundation models under geometry estimation and completion settings. Estimation models recover geometry from RGB inputs, whereas completion models additionally condition on depth priors. Pumpire back-projects depth maps predicted by 3D foundation models with their associated camera intrinsics and quantifies the results with the proposed metrics. Their predicted distance is compared with the physically measured ground truth using the <a class="metrics-toggle-text" href="#proposed-metrics" aria-controls="proposed-metrics">proposed metrics</a>.</p>
+              <div class="metric-details" id="proposed-metrics" role="region" aria-label="Metric definitions">
+                <div class="prose protocol-text">
+                  <p>We back-project the two annotated pixels into the camera coordinate system and compute their Euclidean distance:</p>
+                  <div class="paper-equation" tabindex="0" aria-label="Equation 1"><!-- math:display:d_{\mathrm{pred}}
+= \left\|\mathbf{P}_0-\mathbf{P}_1\right\|_2,
+\qquad
+\text{where}\quad
+\mathbf{P}_i
+= D(u_i,v_i)K^{-1}[u_i,v_i,1]^\top,
+\quad i\in\{0,1\}.\tag{1} --><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mtable width="100%"><mtr><mtd width="50%"></mtd><mtd><mrow><msub><mi>d</mi><mrow><mi mathvariant="normal">p</mi><mi mathvariant="normal">r</mi><mi mathvariant="normal">e</mi><mi mathvariant="normal">d</mi></mrow></msub><mo>=</mo><msub><mrow><mo fence="true">∥</mo><msub><mi mathvariant="bold">P</mi><mn>0</mn></msub><mo>−</mo><msub><mi mathvariant="bold">P</mi><mn>1</mn></msub><mo fence="true">∥</mo></mrow><mn>2</mn></msub><mo separator="true">,</mo><mspace width="2em"/><mtext>where</mtext><mspace width="1em"/><msub><mi mathvariant="bold">P</mi><mi>i</mi></msub><mo>=</mo><mi>D</mi><mo stretchy="false">(</mo><msub><mi>u</mi><mi>i</mi></msub><mo separator="true">,</mo><msub><mi>v</mi><mi>i</mi></msub><mo stretchy="false">)</mo><msup><mi>K</mi><mrow><mo>−</mo><mn>1</mn></mrow></msup><mo stretchy="false">[</mo><msub><mi>u</mi><mi>i</mi></msub><mo separator="true">,</mo><msub><mi>v</mi><mi>i</mi></msub><mo separator="true">,</mo><mn>1</mn><msup><mo stretchy="false">]</mo><mi mathvariant="normal">⊤</mi></msup><mo separator="true">,</mo><mspace width="1em"/><mi>i</mi><mo>∈</mo><mo stretchy="false">{</mo><mn>0</mn><mo separator="true">,</mo><mn>1</mn><mo stretchy="false">}</mo><mi mathvariant="normal">.</mi></mrow></mtd><mtd width="50%"></mtd><mtd><mtext>(1)</mtext></mtd></mtr></mtable><annotation encoding="application/x-tex">d_{\mathrm{pred}}
+= \left\|\mathbf{P}_0-\mathbf{P}_1\right\|_2,
+\qquad
+\text{where}\quad
+\mathbf{P}_i
+= D(u_i,v_i)K^{-1}[u_i,v_i,1]^\top,
+\quad i\in\{0,1\}.\tag{1}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="katex-base"><span class="katex-strut" style="height:0.9805em;vertical-align:-0.2861em;"></span><span class="mord"><span class="mord mathnormal">d</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3361em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="katex-sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight"><span class="mord mathrm mtight">pred</span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.2861em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="katex-base"><span class="katex-strut" style="height:1.0497em;vertical-align:-0.2997em;"></span><span class="minner"><span class="minner"><span class="mopen delimcenter" style="top:0em;">∥</span><span class="mord"><span class="mord mathbf">P</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3011em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="katex-sizing reset-size6 size3 mtight"><span class="mord mtight">0</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord"><span class="mord mathbf">P</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3011em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="katex-sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mclose delimcenter" style="top:0em;">∥</span></span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.4003em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="katex-sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.2997em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mpunct">,</span><span class="mspace" style="margin-right:2em;"></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord text"><span class="mord">where</span></span><span class="mspace" style="margin-right:1em;"></span><span class="mord"><span class="mord mathbf">P</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="katex-sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="katex-base"><span class="katex-strut" style="height:1.1491em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.0278em;">D</span><span class="mopen">(</span><span class="mord"><span class="mord mathnormal">u</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="katex-sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.0359em;">v</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-left:-0.0359em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="katex-sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mclose">)</span><span class="mord"><span class="mord mathnormal" style="margin-right:0.0715em;">K</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8641em;"><span style="top:-3.113em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="katex-sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">−</span><span class="mord mtight">1</span></span></span></span></span></span></span></span></span><span class="mopen">[</span><span class="mord"><span class="mord mathnormal">u</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="katex-sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.0359em;">v</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-left:-0.0359em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="katex-sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord">1</span><span class="mclose"><span class="mclose">]</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8991em;"><span style="top:-3.113em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="katex-sizing reset-size6 size3 mtight"><span class="mord mtight">⊤</span></span></span></span></span></span></span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:1em;"></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal">i</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">∈</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="katex-base"><span class="katex-strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">{</span><span class="mord">0</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord">1</span><span class="mclose">}</span><span class="mord">.</span></span><span class="katex-tag"><span class="katex-strut" style="height:1.1988em;vertical-align:-0.2997em;"></span><span class="mord text"><span class="mord">(</span><span class="mord"><span class="mord">1</span></span><span class="mord">)</span></span></span></span></span></span><!-- /math --></div>
+                  <p>Here, <i>K</i> denotes the camera intrinsics, and the ground-truth distance <i>d</i><sub>gt</sub> is obtained through physical measurement.</p>
+
+          <p>Let <!-- math:inline:S --><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>S</mi></mrow><annotation encoding="application/x-tex">S</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="katex-base"><span class="katex-strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.0576em;">S</span></span></span></span><!-- /math --> denote the number of scenes and <!-- math:inline:M_s --><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>M</mi><mi>s</mi></msub></mrow><annotation encoding="application/x-tex">M_s</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="katex-base"><span class="katex-strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.109em;">M</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-left:-0.109em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="katex-sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">s</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span><!-- /math --> the number of evaluated frames in scene <!-- math:inline:s --><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>s</mi></mrow><annotation encoding="application/x-tex">s</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="katex-base"><span class="katex-strut" style="height:0.4306em;"></span><span class="mord mathnormal">s</span></span></span></span><!-- /math -->. Since the point pair remains fixed within each scene, <!-- math:inline:d_{\mathrm{gt}}^{(s)} --><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>d</mi><mrow><mi mathvariant="normal">g</mi><mi mathvariant="normal">t</mi></mrow><mrow><mo stretchy="false">(</mo><mi>s</mi><mo stretchy="false">)</mo></mrow></msubsup></mrow><annotation encoding="application/x-tex">d_{\mathrm{gt}}^{(s)}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="katex-base"><span class="katex-strut" style="height:1.4267em;vertical-align:-0.3819em;"></span><span class="mord"><span class="mord mathnormal">d</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.0448em;"><span style="top:-2.4542em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="katex-sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight"><span class="mord mathrm mtight">gt</span></span></span></span></span><span style="top:-3.2198em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="katex-sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mopen mtight">(</span><span class="mord mathnormal mtight">s</span><span class="mclose mtight">)</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.3819em;"><span></span></span></span></span></span></span></span></span></span><!-- /math --> is shared across all frames. We evaluate each scene using Absolute Error (AE), Relative Error (RE), Logarithmic Error (LE), and Threshold Accuracy (<!-- math:inline:\delta_\tau --><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>δ</mi><mi>τ</mi></msub></mrow><annotation encoding="application/x-tex">\delta_\tau</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="katex-base"><span class="katex-strut" style="height:0.8444em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.0379em;">δ</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-left:-0.0379em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="katex-sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.1132em;">τ</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span><!-- /math -->). Define the frame-wise absolute error and distance ratio as <!-- math:inline:e_{s,j}=\left|d_{\mathrm{pred}}^{(s,j)}-d_{\mathrm{gt}}^{(s)}\right| --><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>e</mi><mrow><mi>s</mi><mo separator="true">,</mo><mi>j</mi></mrow></msub><mo>=</mo><mrow><mo fence="true">∣</mo><msubsup><mi>d</mi><mrow><mi mathvariant="normal">p</mi><mi mathvariant="normal">r</mi><mi mathvariant="normal">e</mi><mi mathvariant="normal">d</mi></mrow><mrow><mo stretchy="false">(</mo><mi>s</mi><mo separator="true">,</mo><mi>j</mi><mo stretchy="false">)</mo></mrow></msubsup><mo>−</mo><msubsup><mi>d</mi><mrow><mi mathvariant="normal">g</mi><mi mathvariant="normal">t</mi></mrow><mrow><mo stretchy="false">(</mo><mi>s</mi><mo stretchy="false">)</mo></mrow></msubsup><mo fence="true">∣</mo></mrow></mrow><annotation encoding="application/x-tex">e_{s,j}=\left|d_{\mathrm{pred}}^{(s,j)}-d_{\mathrm{gt}}^{(s)}\right|</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="katex-base"><span class="katex-strut" style="height:0.7167em;vertical-align:-0.2861em;"></span><span class="mord"><span class="mord mathnormal">e</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="katex-sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">s</span><span class="mpunct mtight">,</span><span class="mord mathnormal mtight" style="margin-right:0.0572em;">j</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.2861em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="katex-base"><span class="katex-strut" style="height:1.8em;vertical-align:-0.65em;"></span><span class="minner"><span class="mopen"><span class="delimsizing mult"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.15em;"><span style="top:-3.15em;"><span class="pstrut" style="height:3.8em;"></span><span style="width:0.333em;height:1.8em;"><svg xmlns="http://www.w3.org/2000/svg" width="0.333em" height="1.8em" viewBox="0 0 333 1800"><path d="M145 15 v585 v600 v585 c2.667,10,9.667,15,21,15
+c10,0,16.667,-5,20,-15 v-585 v-600 v-585 c-2.667,-10,-9.667,-15,-21,-15
+c-10,0,-16.667,5,-20,15z M188 15 H145 v585 v600 v585 h43z"/></svg></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.65em;"><span></span></span></span></span></span></span><span class="mord"><span class="mord mathnormal">d</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.0448em;"><span style="top:-2.3987em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="katex-sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight"><span class="mord mathrm mtight">pred</span></span></span></span></span><span style="top:-3.2198em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="katex-sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mopen mtight">(</span><span class="mord mathnormal mtight">s</span><span class="mpunct mtight">,</span><span class="mord mathnormal mtight" style="margin-right:0.0572em;">j</span><span class="mclose mtight">)</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.4374em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord"><span class="mord mathnormal">d</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.0448em;"><span style="top:-2.4542em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="katex-sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight"><span class="mord mathrm mtight">gt</span></span></span></span></span><span style="top:-3.2198em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="katex-sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mopen mtight">(</span><span class="mord mathnormal mtight">s</span><span class="mclose mtight">)</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.3819em;"><span></span></span></span></span></span></span><span class="mclose"><span class="delimsizing mult"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.15em;"><span style="top:-3.15em;"><span class="pstrut" style="height:3.8em;"></span><span style="width:0.333em;height:1.8em;"><svg xmlns="http://www.w3.org/2000/svg" width="0.333em" height="1.8em" viewBox="0 0 333 1800"><path d="M145 15 v585 v600 v585 c2.667,10,9.667,15,21,15
+c10,0,16.667,-5,20,-15 v-585 v-600 v-585 c-2.667,-10,-9.667,-15,-21,-15
+c-10,0,-16.667,5,-20,15z M188 15 H145 v585 v600 v585 h43z"/></svg></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.65em;"><span></span></span></span></span></span></span></span></span></span></span><!-- /math --> and <!-- math:inline:r_{s,j}=d_{\mathrm{pred}}^{(s,j)}/d_{\mathrm{gt}}^{(s)} --><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>r</mi><mrow><mi>s</mi><mo separator="true">,</mo><mi>j</mi></mrow></msub><mo>=</mo><msubsup><mi>d</mi><mrow><mi mathvariant="normal">p</mi><mi mathvariant="normal">r</mi><mi mathvariant="normal">e</mi><mi mathvariant="normal">d</mi></mrow><mrow><mo stretchy="false">(</mo><mi>s</mi><mo separator="true">,</mo><mi>j</mi><mo stretchy="false">)</mo></mrow></msubsup><mi mathvariant="normal">/</mi><msubsup><mi>d</mi><mrow><mi mathvariant="normal">g</mi><mi mathvariant="normal">t</mi></mrow><mrow><mo stretchy="false">(</mo><mi>s</mi><mo stretchy="false">)</mo></mrow></msubsup></mrow><annotation encoding="application/x-tex">r_{s,j}=d_{\mathrm{pred}}^{(s,j)}/d_{\mathrm{gt}}^{(s)}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="katex-base"><span class="katex-strut" style="height:0.7167em;vertical-align:-0.2861em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.0278em;">r</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-left:-0.0278em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="katex-sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">s</span><span class="mpunct mtight">,</span><span class="mord mathnormal mtight" style="margin-right:0.0572em;">j</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.2861em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="katex-base"><span class="katex-strut" style="height:1.4822em;vertical-align:-0.4374em;"></span><span class="mord"><span class="mord mathnormal">d</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.0448em;"><span style="top:-2.3987em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="katex-sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight"><span class="mord mathrm mtight">pred</span></span></span></span></span><span style="top:-3.2198em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="katex-sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mopen mtight">(</span><span class="mord mathnormal mtight">s</span><span class="mpunct mtight">,</span><span class="mord mathnormal mtight" style="margin-right:0.0572em;">j</span><span class="mclose mtight">)</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.4374em;"><span></span></span></span></span></span></span><span class="mord">/</span><span class="mord"><span class="mord mathnormal">d</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.0448em;"><span style="top:-2.4542em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="katex-sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight"><span class="mord mathrm mtight">gt</span></span></span></span></span><span style="top:-3.2198em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="katex-sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mopen mtight">(</span><span class="mord mathnormal mtight">s</span><span class="mclose mtight">)</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.3819em;"><span></span></span></span></span></span></span></span></span></span><!-- /math -->. The scene-level metrics are then</p>
+          <div class="equation-pair"><div class="paper-equation" tabindex="0" aria-label="Equation 2"><!-- math:display:\mathrm{AE}_s
+  =\frac{1}{M_s}\sum_{j=1}^{M_s}e_{s,j}.\tag{2} --><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mtable width="100%"><mtr><mtd width="50%"></mtd><mtd><mrow><msub><mrow><mi mathvariant="normal">A</mi><mi mathvariant="normal">E</mi></mrow><mi>s</mi></msub><mo>=</mo><mfrac><mn>1</mn><msub><mi>M</mi><mi>s</mi></msub></mfrac><munderover><mo>∑</mo><mrow><mi>j</mi><mo>=</mo><mn>1</mn></mrow><msub><mi>M</mi><mi>s</mi></msub></munderover><msub><mi>e</mi><mrow><mi>s</mi><mo separator="true">,</mo><mi>j</mi></mrow></msub><mi mathvariant="normal">.</mi></mrow></mtd><mtd width="50%"></mtd><mtd><mtext>(2)</mtext></mtd></mtr></mtable><annotation encoding="application/x-tex">\mathrm{AE}_s
+  =\frac{1}{M_s}\sum_{j=1}^{M_s}e_{s,j}.\tag{2}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="katex-base"><span class="katex-strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord"><span class="mord mathrm">AE</span></span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="katex-sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">s</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="katex-base"><span class="katex-strut" style="height:3.2532em;vertical-align:-1.4138em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3214em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord"><span class="mord mathnormal" style="margin-right:0.109em;">M</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-left:-0.109em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="katex-sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">s</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.836em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mop op-limits"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.8394em;"><span style="top:-1.8723em;margin-left:0em;"><span class="pstrut" style="height:3.05em;"></span><span class="katex-sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.0572em;">j</span><span class="mrel mtight">=</span><span class="mord mtight">1</span></span></span></span><span style="top:-3.05em;"><span class="pstrut" style="height:3.05em;"></span><span><span class="mop op-symbol large-op">∑</span></span></span><span style="top:-4.3111em;margin-left:0em;"><span class="pstrut" style="height:3.05em;"></span><span class="katex-sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.109em;">M</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1645em;"><span style="top:-2.357em;margin-left:-0.109em;margin-right:0.0714em;"><span class="pstrut" style="height:2.5em;"></span><span class="katex-sizing reset-size3 size1 mtight"><span class="mord mathnormal mtight">s</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.143em;"><span></span></span></span></span></span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:1.4138em;"><span></span></span></span></span></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord"><span class="mord mathnormal">e</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="katex-sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">s</span><span class="mpunct mtight">,</span><span class="mord mathnormal mtight" style="margin-right:0.0572em;">j</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.2861em;"><span></span></span></span></span></span></span><span class="mord">.</span></span><span class="katex-tag"><span class="katex-strut" style="height:3.2532em;vertical-align:-1.4138em;"></span><span class="mord text"><span class="mord">(</span><span class="mord"><span class="mord">2</span></span><span class="mord">)</span></span></span></span></span></span><!-- /math --></div><div class="paper-equation" tabindex="0" aria-label="Equation 3"><!-- math:display:\mathrm{RE}_s
+  =\frac{1}{M_s}\sum_{j=1}^{M_s}
+  \frac{e_{s,j}}{d_{\mathrm{gt}}^{(s)}}.\tag{3} --><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mtable width="100%"><mtr><mtd width="50%"></mtd><mtd><mrow><msub><mrow><mi mathvariant="normal">R</mi><mi mathvariant="normal">E</mi></mrow><mi>s</mi></msub><mo>=</mo><mfrac><mn>1</mn><msub><mi>M</mi><mi>s</mi></msub></mfrac><munderover><mo>∑</mo><mrow><mi>j</mi><mo>=</mo><mn>1</mn></mrow><msub><mi>M</mi><mi>s</mi></msub></munderover><mfrac><msub><mi>e</mi><mrow><mi>s</mi><mo separator="true">,</mo><mi>j</mi></mrow></msub><msubsup><mi>d</mi><mrow><mi mathvariant="normal">g</mi><mi mathvariant="normal">t</mi></mrow><mrow><mo stretchy="false">(</mo><mi>s</mi><mo stretchy="false">)</mo></mrow></msubsup></mfrac><mi mathvariant="normal">.</mi></mrow></mtd><mtd width="50%"></mtd><mtd><mtext>(3)</mtext></mtd></mtr></mtable><annotation encoding="application/x-tex">\mathrm{RE}_s
+  =\frac{1}{M_s}\sum_{j=1}^{M_s}
+  \frac{e_{s,j}}{d_{\mathrm{gt}}^{(s)}}.\tag{3}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="katex-base"><span class="katex-strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord"><span class="mord mathrm">RE</span></span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="katex-sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">s</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="katex-base"><span class="katex-strut" style="height:3.2532em;vertical-align:-1.4138em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3214em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord"><span class="mord mathnormal" style="margin-right:0.109em;">M</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-left:-0.109em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="katex-sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">s</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.836em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mop op-limits"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.8394em;"><span style="top:-1.8723em;margin-left:0em;"><span class="pstrut" style="height:3.05em;"></span><span class="katex-sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.0572em;">j</span><span class="mrel mtight">=</span><span class="mord mtight">1</span></span></span></span><span style="top:-3.05em;"><span class="pstrut" style="height:3.05em;"></span><span><span class="mop op-symbol large-op">∑</span></span></span><span style="top:-4.3111em;margin-left:0em;"><span class="pstrut" style="height:3.05em;"></span><span class="katex-sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.109em;">M</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1645em;"><span style="top:-2.357em;margin-left:-0.109em;margin-right:0.0714em;"><span class="pstrut" style="height:2.5em;"></span><span class="katex-sizing reset-size3 size1 mtight"><span class="mord mathnormal mtight">s</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.143em;"><span></span></span></span></span></span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:1.4138em;"><span></span></span></span></span></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.1076em;"><span style="top:-2.11em;"><span class="pstrut" style="height:3.0448em;"></span><span class="mord"><span class="mord"><span class="mord mathnormal">d</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.0448em;"><span style="top:-2.4542em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="katex-sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight"><span class="mord mathrm mtight">gt</span></span></span></span></span><span style="top:-3.2198em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="katex-sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mopen mtight">(</span><span class="mord mathnormal mtight">s</span><span class="mclose mtight">)</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.3819em;"><span></span></span></span></span></span></span></span></span><span style="top:-3.2748em;"><span class="pstrut" style="height:3.0448em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.7218em;"><span class="pstrut" style="height:3.0448em;"></span><span class="mord"><span class="mord"><span class="mord mathnormal">e</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="katex-sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">s</span><span class="mpunct mtight">,</span><span class="mord mathnormal mtight" style="margin-right:0.0572em;">j</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.2861em;"><span></span></span></span></span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:1.3167em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mord">.</span></span><span class="katex-tag"><span class="katex-strut" style="height:3.2532em;vertical-align:-1.4138em;"></span><span class="mord text"><span class="mord">(</span><span class="mord"><span class="mord">3</span></span><span class="mord">)</span></span></span></span></span></span><!-- /math --></div></div>
+          <div class="equation-pair"><div class="paper-equation" tabindex="0" aria-label="Equation 4"><!-- math:display:\mathrm{LE}_s
+  =\frac{1}{M_s}\sum_{j=1}^{M_s}
+  \left|\log r_{s,j}\right|.\tag{4} --><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mtable width="100%"><mtr><mtd width="50%"></mtd><mtd><mrow><msub><mrow><mi mathvariant="normal">L</mi><mi mathvariant="normal">E</mi></mrow><mi>s</mi></msub><mo>=</mo><mfrac><mn>1</mn><msub><mi>M</mi><mi>s</mi></msub></mfrac><munderover><mo>∑</mo><mrow><mi>j</mi><mo>=</mo><mn>1</mn></mrow><msub><mi>M</mi><mi>s</mi></msub></munderover><mrow><mo fence="true">∣</mo><mi>log</mi><mo>⁡</mo><msub><mi>r</mi><mrow><mi>s</mi><mo separator="true">,</mo><mi>j</mi></mrow></msub><mo fence="true">∣</mo></mrow><mi mathvariant="normal">.</mi></mrow></mtd><mtd width="50%"></mtd><mtd><mtext>(4)</mtext></mtd></mtr></mtable><annotation encoding="application/x-tex">\mathrm{LE}_s
+  =\frac{1}{M_s}\sum_{j=1}^{M_s}
+  \left|\log r_{s,j}\right|.\tag{4}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="katex-base"><span class="katex-strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord"><span class="mord mathrm">LE</span></span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="katex-sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">s</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="katex-base"><span class="katex-strut" style="height:3.2532em;vertical-align:-1.4138em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3214em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord"><span class="mord mathnormal" style="margin-right:0.109em;">M</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-left:-0.109em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="katex-sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">s</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.836em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mop op-limits"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.8394em;"><span style="top:-1.8723em;margin-left:0em;"><span class="pstrut" style="height:3.05em;"></span><span class="katex-sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.0572em;">j</span><span class="mrel mtight">=</span><span class="mord mtight">1</span></span></span></span><span style="top:-3.05em;"><span class="pstrut" style="height:3.05em;"></span><span><span class="mop op-symbol large-op">∑</span></span></span><span style="top:-4.3111em;margin-left:0em;"><span class="pstrut" style="height:3.05em;"></span><span class="katex-sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.109em;">M</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1645em;"><span style="top:-2.357em;margin-left:-0.109em;margin-right:0.0714em;"><span class="pstrut" style="height:2.5em;"></span><span class="katex-sizing reset-size3 size1 mtight"><span class="mord mathnormal mtight">s</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.143em;"><span></span></span></span></span></span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:1.4138em;"><span></span></span></span></span></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="minner"><span class="mopen delimcenter" style="top:0em;">∣</span><span class="mop">lo<span style="margin-right:0.0139em;">g</span></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.0278em;">r</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-left:-0.0278em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="katex-sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">s</span><span class="mpunct mtight">,</span><span class="mord mathnormal mtight" style="margin-right:0.0572em;">j</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.2861em;"><span></span></span></span></span></span></span><span class="mclose delimcenter" style="top:0em;">∣</span></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord">.</span></span><span class="katex-tag"><span class="katex-strut" style="height:3.2532em;vertical-align:-1.4138em;"></span><span class="mord text"><span class="mord">(</span><span class="mord"><span class="mord">4</span></span><span class="mord">)</span></span></span></span></span></span><!-- /math --></div><div class="paper-equation" tabindex="0" aria-label="Equation 5"><!-- math:display:\delta_{\tau,s}
+  =\frac{1}{M_s}\sum_{j=1}^{M_s}
+  \mathbf{1}\!\left[
+  \max\!\left(r_{s,j},r_{s,j}^{-1}\right)&lt;\tau
+  \right].\tag{5} --><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mtable width="100%"><mtr><mtd width="50%"></mtd><mtd><mrow><msub><mi>δ</mi><mrow><mi>τ</mi><mo separator="true">,</mo><mi>s</mi></mrow></msub><mo>=</mo><mfrac><mn>1</mn><msub><mi>M</mi><mi>s</mi></msub></mfrac><munderover><mo>∑</mo><mrow><mi>j</mi><mo>=</mo><mn>1</mn></mrow><msub><mi>M</mi><mi>s</mi></msub></munderover><mn mathvariant="bold">1</mn><mtext> ⁣</mtext><mrow><mo fence="true">[</mo><mi>max</mi><mo>⁡</mo><mtext> ⁣</mtext><mrow><mo fence="true">(</mo><msub><mi>r</mi><mrow><mi>s</mi><mo separator="true">,</mo><mi>j</mi></mrow></msub><mo separator="true">,</mo><msubsup><mi>r</mi><mrow><mi>s</mi><mo separator="true">,</mo><mi>j</mi></mrow><mrow><mo>−</mo><mn>1</mn></mrow></msubsup><mo fence="true">)</mo></mrow><mo>&lt;</mo><mi>τ</mi><mo fence="true">]</mo></mrow><mi mathvariant="normal">.</mi></mrow></mtd><mtd width="50%"></mtd><mtd><mtext>(5)</mtext></mtd></mtr></mtable><annotation encoding="application/x-tex">\delta_{\tau,s}
+  =\frac{1}{M_s}\sum_{j=1}^{M_s}
+  \mathbf{1}\!\left[
+  \max\!\left(r_{s,j},r_{s,j}^{-1}\right)&lt;\tau
+  \right].\tag{5}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="katex-base"><span class="katex-strut" style="height:0.9805em;vertical-align:-0.2861em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.0379em;">δ</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-left:-0.0379em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="katex-sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.1132em;">τ</span><span class="mpunct mtight">,</span><span class="mord mathnormal mtight">s</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.2861em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="katex-base"><span class="katex-strut" style="height:3.2532em;vertical-align:-1.4138em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3214em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord"><span class="mord mathnormal" style="margin-right:0.109em;">M</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-left:-0.109em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="katex-sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">s</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.836em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mop op-limits"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.8394em;"><span style="top:-1.8723em;margin-left:0em;"><span class="pstrut" style="height:3.05em;"></span><span class="katex-sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.0572em;">j</span><span class="mrel mtight">=</span><span class="mord mtight">1</span></span></span></span><span style="top:-3.05em;"><span class="pstrut" style="height:3.05em;"></span><span><span class="mop op-symbol large-op">∑</span></span></span><span style="top:-4.3111em;margin-left:0em;"><span class="pstrut" style="height:3.05em;"></span><span class="katex-sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.109em;">M</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1645em;"><span style="top:-2.357em;margin-left:-0.109em;margin-right:0.0714em;"><span class="pstrut" style="height:2.5em;"></span><span class="katex-sizing reset-size3 size1 mtight"><span class="mord mathnormal mtight">s</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.143em;"><span></span></span></span></span></span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:1.4138em;"><span></span></span></span></span></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathbf">1</span><span class="mspace" style="margin-right:-0.1667em;"></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="minner"><span class="mopen delimcenter" style="top:0em;"><span class="delimsizing size1">[</span></span><span class="mop">max</span><span class="mspace" style="margin-right:-0.1667em;"></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="minner"><span class="mopen delimcenter" style="top:0em;"><span class="delimsizing size1">(</span></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.0278em;">r</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-left:-0.0278em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="katex-sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">s</span><span class="mpunct mtight">,</span><span class="mord mathnormal mtight" style="margin-right:0.0572em;">j</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.2861em;"><span></span></span></span></span></span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.0278em;">r</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8641em;"><span style="top:-2.433em;margin-left:-0.0278em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="katex-sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">s</span><span class="mpunct mtight">,</span><span class="mord mathnormal mtight" style="margin-right:0.0572em;">j</span></span></span></span><span style="top:-3.113em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="katex-sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">−</span><span class="mord mtight">1</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.4031em;"><span></span></span></span></span></span></span><span class="mclose delimcenter" style="top:0em;"><span class="delimsizing size1">)</span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">&lt;</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mord mathnormal" style="margin-right:0.1132em;">τ</span><span class="mclose delimcenter" style="top:0em;"><span class="delimsizing size1">]</span></span></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord">.</span></span><span class="katex-tag"><span class="katex-strut" style="height:3.2532em;vertical-align:-1.4138em;"></span><span class="mord text"><span class="mord">(</span><span class="mord"><span class="mord">5</span></span><span class="mord">)</span></span></span></span></span></span><!-- /math --></div></div>
+          <p>The benchmark-level result for each metric <!-- math:inline:q\in\{\mathrm{AE},\mathrm{RE},\mathrm{LE},\delta_\tau\} --><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>q</mi><mo>∈</mo><mo stretchy="false">{</mo><mrow><mi mathvariant="normal">A</mi><mi mathvariant="normal">E</mi></mrow><mo separator="true">,</mo><mrow><mi mathvariant="normal">R</mi><mi mathvariant="normal">E</mi></mrow><mo separator="true">,</mo><mrow><mi mathvariant="normal">L</mi><mi mathvariant="normal">E</mi></mrow><mo separator="true">,</mo><msub><mi>δ</mi><mi>τ</mi></msub><mo stretchy="false">}</mo></mrow><annotation encoding="application/x-tex">q\in\{\mathrm{AE},\mathrm{RE},\mathrm{LE},\delta_\tau\}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="katex-base"><span class="katex-strut" style="height:0.7335em;vertical-align:-0.1944em;"></span><span class="mord mathnormal" style="margin-right:0.0359em;">q</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">∈</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="katex-base"><span class="katex-strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">{</span><span class="mord"><span class="mord mathrm">AE</span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord"><span class="mord mathrm">RE</span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord"><span class="mord mathrm">LE</span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.0379em;">δ</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-left:-0.0379em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="katex-sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.1132em;">τ</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mclose">}</span></span></span></span><!-- /math --> is obtained by averaging its scene-level values:</p>
+          <div class="paper-equation" tabindex="0" aria-label="Equation 6"><!-- math:display:q=\frac{1}{S}\sum_{s=1}^{S}q_s.\tag{6} --><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mtable width="100%"><mtr><mtd width="50%"></mtd><mtd><mrow><mi>q</mi><mo>=</mo><mfrac><mn>1</mn><mi>S</mi></mfrac><munderover><mo>∑</mo><mrow><mi>s</mi><mo>=</mo><mn>1</mn></mrow><mi>S</mi></munderover><msub><mi>q</mi><mi>s</mi></msub><mi mathvariant="normal">.</mi></mrow></mtd><mtd width="50%"></mtd><mtd><mtext>(6)</mtext></mtd></mtr></mtable><annotation encoding="application/x-tex">q=\frac{1}{S}\sum_{s=1}^{S}q_s.\tag{6}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="katex-base"><span class="katex-strut" style="height:0.625em;vertical-align:-0.1944em;"></span><span class="mord mathnormal" style="margin-right:0.0359em;">q</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="katex-base"><span class="katex-strut" style="height:3.0954em;vertical-align:-1.2671em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3214em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.0576em;">S</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.686em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mop op-limits"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.8283em;"><span style="top:-1.8829em;margin-left:0em;"><span class="pstrut" style="height:3.05em;"></span><span class="katex-sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">s</span><span class="mrel mtight">=</span><span class="mord mtight">1</span></span></span></span><span style="top:-3.05em;"><span class="pstrut" style="height:3.05em;"></span><span><span class="mop op-symbol large-op">∑</span></span></span><span style="top:-4.3em;margin-left:0em;"><span class="pstrut" style="height:3.05em;"></span><span class="katex-sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.0576em;">S</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:1.2671em;"><span></span></span></span></span></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.0359em;">q</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-left:-0.0359em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="katex-sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">s</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mord">.</span></span><span class="katex-tag"><span class="katex-strut" style="height:3.0954em;vertical-align:-1.2671em;"></span><span class="mord text"><span class="mord">(</span><span class="mord"><span class="mord">6</span></span><span class="mord">)</span></span></span></span></span></span><!-- /math --></div>
+          <p>To evaluate cross-view consistency, we utilize Relative Standard Deviation (RSD) to measure the normalized variation of predicted distances within each sequence. For sequence <!-- math:inline:s --><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>s</mi></mrow><annotation encoding="application/x-tex">s</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="katex-base"><span class="katex-strut" style="height:0.4306em;"></span><span class="mord mathnormal">s</span></span></span></span><!-- /math -->, RSD is defined as</p>
+          <div class="paper-equation" tabindex="0" aria-label="Equation 7"><!-- math:display:\mathrm{RSD}_s
+      =
+      \frac{1}{\bar d_{\mathrm{pred}}^{(s)}}
+      \sqrt{
+      \frac{1}{M_s-1}
+      \sum_{j=1}^{M_s}
+      \left(
+      d_{\mathrm{pred}}^{(s,j)}
+      -\bar d_{\mathrm{pred}}^{(s)}
+      \right)^2
+      },
+      \qquad
+      \bar d_{\mathrm{pred}}^{(s)}
+      =
+      \frac{1}{M_s}
+      \sum_{j=1}^{M_s}d_{\mathrm{pred}}^{(s,j)}.\tag{7} --><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mtable width="100%"><mtr><mtd width="50%"></mtd><mtd><mrow><msub><mrow><mi mathvariant="normal">R</mi><mi mathvariant="normal">S</mi><mi mathvariant="normal">D</mi></mrow><mi>s</mi></msub><mo>=</mo><mfrac><mn>1</mn><msubsup><mover accent="true"><mi>d</mi><mo>ˉ</mo></mover><mrow><mi mathvariant="normal">p</mi><mi mathvariant="normal">r</mi><mi mathvariant="normal">e</mi><mi mathvariant="normal">d</mi></mrow><mrow><mo stretchy="false">(</mo><mi>s</mi><mo stretchy="false">)</mo></mrow></msubsup></mfrac><msqrt><mrow><mfrac><mn>1</mn><mrow><msub><mi>M</mi><mi>s</mi></msub><mo>−</mo><mn>1</mn></mrow></mfrac><munderover><mo>∑</mo><mrow><mi>j</mi><mo>=</mo><mn>1</mn></mrow><msub><mi>M</mi><mi>s</mi></msub></munderover><msup><mrow><mo fence="true">(</mo><msubsup><mi>d</mi><mrow><mi mathvariant="normal">p</mi><mi mathvariant="normal">r</mi><mi mathvariant="normal">e</mi><mi mathvariant="normal">d</mi></mrow><mrow><mo stretchy="false">(</mo><mi>s</mi><mo separator="true">,</mo><mi>j</mi><mo stretchy="false">)</mo></mrow></msubsup><mo>−</mo><msubsup><mover accent="true"><mi>d</mi><mo>ˉ</mo></mover><mrow><mi mathvariant="normal">p</mi><mi mathvariant="normal">r</mi><mi mathvariant="normal">e</mi><mi mathvariant="normal">d</mi></mrow><mrow><mo stretchy="false">(</mo><mi>s</mi><mo stretchy="false">)</mo></mrow></msubsup><mo fence="true">)</mo></mrow><mn>2</mn></msup></mrow></msqrt><mo separator="true">,</mo><mspace width="2em"/><msubsup><mover accent="true"><mi>d</mi><mo>ˉ</mo></mover><mrow><mi mathvariant="normal">p</mi><mi mathvariant="normal">r</mi><mi mathvariant="normal">e</mi><mi mathvariant="normal">d</mi></mrow><mrow><mo stretchy="false">(</mo><mi>s</mi><mo stretchy="false">)</mo></mrow></msubsup><mo>=</mo><mfrac><mn>1</mn><msub><mi>M</mi><mi>s</mi></msub></mfrac><munderover><mo>∑</mo><mrow><mi>j</mi><mo>=</mo><mn>1</mn></mrow><msub><mi>M</mi><mi>s</mi></msub></munderover><msubsup><mi>d</mi><mrow><mi mathvariant="normal">p</mi><mi mathvariant="normal">r</mi><mi mathvariant="normal">e</mi><mi mathvariant="normal">d</mi></mrow><mrow><mo stretchy="false">(</mo><mi>s</mi><mo separator="true">,</mo><mi>j</mi><mo stretchy="false">)</mo></mrow></msubsup><mi mathvariant="normal">.</mi></mrow></mtd><mtd width="50%"></mtd><mtd><mtext>(7)</mtext></mtd></mtr></mtable><annotation encoding="application/x-tex">\mathrm{RSD}_s
+      =
+      \frac{1}{\bar d_{\mathrm{pred}}^{(s)}}
+      \sqrt{
+      \frac{1}{M_s-1}
+      \sum_{j=1}^{M_s}
+      \left(
+      d_{\mathrm{pred}}^{(s,j)}
+      -\bar d_{\mathrm{pred}}^{(s)}
+      \right)^2
+      },
+      \qquad
+      \bar d_{\mathrm{pred}}^{(s)}
+      =
+      \frac{1}{M_s}
+      \sum_{j=1}^{M_s}d_{\mathrm{pred}}^{(s,j)}.\tag{7}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="katex-base"><span class="katex-strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord"><span class="mord mathrm">RSD</span></span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="katex-sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">s</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="katex-base"><span class="katex-strut" style="height:3.481em;vertical-align:-1.4138em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3214em;"><span style="top:-2.11em;"><span class="pstrut" style="height:3.0448em;"></span><span class="mord"><span class="mord"><span class="mord katex-accent"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8312em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord mathnormal">d</span></span><span style="top:-3.2634em;"><span class="pstrut" style="height:3em;"></span><span class="accent-body" style="left:-0.0833em;"><span class="mord">ˉ</span></span></span></span></span></span></span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.0448em;"><span style="top:-2.3987em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="katex-sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight"><span class="mord mathrm mtight">pred</span></span></span></span></span><span style="top:-3.2198em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="katex-sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mopen mtight">(</span><span class="mord mathnormal mtight">s</span><span class="mclose mtight">)</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.4374em;"><span></span></span></span></span></span></span></span></span><span style="top:-3.2748em;"><span class="pstrut" style="height:3.0448em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.7218em;"><span class="pstrut" style="height:3.0448em;"></span><span class="mord"><span class="mord">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:1.3722em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mord sqrt"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:2.0672em;"><span class="svg-align" style="top:-5.441em;"><span class="pstrut" style="height:5.441em;"></span><span class="mord" style="padding-left:1.056em;"><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3214em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord"><span class="mord mathnormal" style="margin-right:0.109em;">M</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-left:-0.109em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="katex-sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">s</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord">1</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.836em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mop op-limits"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.8394em;"><span style="top:-1.8723em;margin-left:0em;"><span class="pstrut" style="height:3.05em;"></span><span class="katex-sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.0572em;">j</span><span class="mrel mtight">=</span><span class="mord mtight">1</span></span></span></span><span style="top:-3.05em;"><span class="pstrut" style="height:3.05em;"></span><span><span class="mop op-symbol large-op">∑</span></span></span><span style="top:-4.3111em;margin-left:0em;"><span class="pstrut" style="height:3.05em;"></span><span class="katex-sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.109em;">M</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1645em;"><span style="top:-2.357em;margin-left:-0.109em;margin-right:0.0714em;"><span class="pstrut" style="height:2.5em;"></span><span class="katex-sizing reset-size3 size1 mtight"><span class="mord mathnormal mtight">s</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.143em;"><span></span></span></span></span></span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:1.4138em;"><span></span></span></span></span></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="minner"><span class="minner"><span class="mopen delimcenter" style="top:0em;"><span class="delimsizing size2">(</span></span><span class="mord"><span class="mord mathnormal">d</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.0448em;"><span style="top:-2.3987em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="katex-sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight"><span class="mord mathrm mtight">pred</span></span></span></span></span><span style="top:-3.2198em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="katex-sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mopen mtight">(</span><span class="mord mathnormal mtight">s</span><span class="mpunct mtight">,</span><span class="mord mathnormal mtight" style="margin-right:0.0572em;">j</span><span class="mclose mtight">)</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.4374em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord"><span class="mord katex-accent"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8312em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord mathnormal">d</span></span><span style="top:-3.2634em;"><span class="pstrut" style="height:3em;"></span><span class="accent-body" style="left:-0.0833em;"><span class="mord">ˉ</span></span></span></span></span></span></span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.0448em;"><span style="top:-2.3987em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="katex-sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight"><span class="mord mathrm mtight">pred</span></span></span></span></span><span style="top:-3.2198em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="katex-sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mopen mtight">(</span><span class="mord mathnormal mtight">s</span><span class="mclose mtight">)</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.4374em;"><span></span></span></span></span></span></span><span class="mclose delimcenter" style="top:0em;"><span class="delimsizing size2">)</span></span></span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:1.354em;"><span style="top:-3.6029em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="katex-sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span></span></span><span style="top:-4.0272em;"><span class="pstrut" style="height:5.441em;"></span><span class="hide-tail" style="min-width:0.742em;height:3.521em;"><svg xmlns="http://www.w3.org/2000/svg" width="400em" height="3.521em" viewBox="0 0 400000 3520" preserveAspectRatio="xMinYMin slice"><path d="M702 80H40000040
+H742v3386l-4 4-4 4c-.667.7 -2 1.5-4 2.5s-4.167 1.833-6.5 2.5-5.5 1-9.5 1
+h-12l-28-84c-16.667-52-96.667 -294.333-240-727l-212 -643 -85 170
+c-4-3.333-8.333-7.667-13 -13l-13-13l77-155 77-156c66 199.333 139 419.667
+219 661 l218 661zM702 80H400000v40H742z"/></svg></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:1.4138em;"><span></span></span></span></span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:2em;"></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord"><span class="mord katex-accent"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8312em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord mathnormal">d</span></span><span style="top:-3.2634em;"><span class="pstrut" style="height:3em;"></span><span class="accent-body" style="left:-0.0833em;"><span class="mord">ˉ</span></span></span></span></span></span></span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.0448em;"><span style="top:-2.3987em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="katex-sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight"><span class="mord mathrm mtight">pred</span></span></span></span></span><span style="top:-3.2198em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="katex-sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mopen mtight">(</span><span class="mord mathnormal mtight">s</span><span class="mclose mtight">)</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.4374em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="katex-base"><span class="katex-strut" style="height:3.2532em;vertical-align:-1.4138em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3214em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord"><span class="mord mathnormal" style="margin-right:0.109em;">M</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-left:-0.109em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="katex-sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">s</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.836em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mop op-limits"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.8394em;"><span style="top:-1.8723em;margin-left:0em;"><span class="pstrut" style="height:3.05em;"></span><span class="katex-sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.0572em;">j</span><span class="mrel mtight">=</span><span class="mord mtight">1</span></span></span></span><span style="top:-3.05em;"><span class="pstrut" style="height:3.05em;"></span><span><span class="mop op-symbol large-op">∑</span></span></span><span style="top:-4.3111em;margin-left:0em;"><span class="pstrut" style="height:3.05em;"></span><span class="katex-sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.109em;">M</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1645em;"><span style="top:-2.357em;margin-left:-0.109em;margin-right:0.0714em;"><span class="pstrut" style="height:2.5em;"></span><span class="katex-sizing reset-size3 size1 mtight"><span class="mord mathnormal mtight">s</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.143em;"><span></span></span></span></span></span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:1.4138em;"><span></span></span></span></span></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord"><span class="mord mathnormal">d</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.0448em;"><span style="top:-2.3987em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="katex-sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight"><span class="mord mathrm mtight">pred</span></span></span></span></span><span style="top:-3.2198em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="katex-sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mopen mtight">(</span><span class="mord mathnormal mtight">s</span><span class="mpunct mtight">,</span><span class="mord mathnormal mtight" style="margin-right:0.0572em;">j</span><span class="mclose mtight">)</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.4374em;"><span></span></span></span></span></span></span><span class="mord">.</span></span><span class="katex-tag"><span class="katex-strut" style="height:3.481em;vertical-align:-1.4138em;"></span><span class="mord text"><span class="mord">(</span><span class="mord"><span class="mord">7</span></span><span class="mord">)</span></span></span></span></span></span><!-- /math --></div>
+
+
+                </div>
+              </div>
+            </figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <section class="section abstract-section" id="abstract" aria-labelledby="abstract-title">
+      <div class="container prose-width">
+        <h2 id="abstract-title">Abstract</h2>
+        <div class="prose abstract-text">
+          <p>We present <strong><em>Pumpire</em></strong>, a unified benchmark for evaluating metric point-pair distance estimation capability of both image- and video-level 3D foundation models, with or without depth priors. In contrast to previous approaches that normally evaluate depth and camera intrinsics separately or evaluate point-clouds with geometric similarity metrics, which cannot directly reflect models’ point-to-point distance estimation capability, Pumpire directly assesses point-to-point distances from the reconstructed geometry. To this end, we collect a large-scale and diverse dataset (<strong><em>pumpire-6k</em></strong>) comprising 100 real-world scenes, each annotated with physically measured point-pair distances and containing 64 frames, for a total of 6,400 frames. Building on this dataset, we establish a holistic evaluation protocol that covers both image- and video-level 3D foundation models and enables direct assessment of point-pair distance errors and cross-setting comparison. We conduct extensive experiments across 29 baseline configurations of representative 3D foundation models and provide a comprehensive analysis of the results. By offering this benchmark, we target the more fundamental ability to perceive and estimate physical scale in the reconstructed 3D space, which prior evaluation protocols have largely overlooked.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="motivation" aria-labelledby="motivation-title">
+      <div class="container prose-width">
+        <div class="section-heading"><h2 id="motivation-title">Motivation</h2></div>
+        <ul class="prose motivation-text">
+          <li>Existing benchmarks for depth and camera intrinsics estimation are insufficient to characterize a model's point-pair distance estimation capability. <a class="finding-reference" href="#finding-1"><span>Finding 1</span><svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M3 2v5a4 4 0 0 0 4 4h6m-4-4 4 4-4 4"/></svg></a> shows that strong performance on depth and camera intrinsics benchmarks—even when considered jointly—does not necessarily translate into accurate metric distance estimation, highlighting the need for direct evaluation of point-pair distances.</li>
+          <li>Existing point-cloud benchmarks are also not designed to directly evaluate metric point-pair distance estimation. Current benchmarks primarily assess geometric fidelity using metrics such as Chamfer Distance, Accuracy, Completion, and F1-Score, or point-wise reconstruction errors, rather than directly evaluating the accuracy of metric distance estimation between arbitrary point pairs. Meanwhile, recent spatial reasoning benchmarks explicitly evaluate metric distance reasoning, but at a coarse, object-level granularity through question answering. Consequently, neither benchmark type directly assesses metric distance estimation at the point level, leaving the ability to recover physical distances between arbitrary point pairs insufficiently evaluated.</li>
+          <li>There is no evaluation framework that enables unified comparisons of metric 3D foundation models across image- and video-level estimation and completion settings. Existing benchmarks are fragmented: some target image-level estimation or completion, while others focus on video-level estimation or completion. This fragmentation limits unified comparison of 3D foundation models across different settings.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="section dataset-section" id="dataset" aria-labelledby="dataset-title">
+      <div class="container">
+        <div class="section-heading"><h2 id="dataset-title">Dataset: pumpire-6k</h2></div>
+          <p class="prose dataset-intro">We curate a real-world benchmark dataset comprising 100 diverse scenes and 6,400 frames, annotated with physically measured point-pair distances and spanning indoor and outdoor environments with varying levels of difficulty, enabling comprehensive evaluation of metric 3D foundation models under diverse real-world conditions.</p>
+<!-- BEGIN DATASET GALLERY -->
+          <figure class="dataset-gallery">
+            <div class="scene-matrix" aria-label="Selected indoor and outdoor scenes from pumpire-6k">
+              <a class="featured-scene" href="assets/images/dataset/scene-01.webp" data-lightbox data-caption="Reading area with orange chairs and bookshelves" aria-label="Enlarge: Reading area with orange chairs and bookshelves"><img src="assets/images/dataset/scene-01.webp" alt="Reading area with orange chairs and bookshelves" width="1280" height="720" loading="lazy" decoding="async"></a>
+              <a href="assets/images/dataset/scene-02.webp" data-lightbox data-caption="Window-side reading area overlooking a garden" aria-label="Enlarge: Window-side reading area overlooking a garden"><img src="assets/images/dataset/scene-02.webp" alt="Window-side reading area overlooking a garden" width="1280" height="720" loading="lazy" decoding="async"></a>
+              <a href="assets/images/dataset/scene-03.webp" data-lightbox data-caption="Art and calligraphy display on a wood-paneled wall" aria-label="Enlarge: Art and calligraphy display on a wood-paneled wall"><img src="assets/images/dataset/scene-03.webp" alt="Art and calligraphy display on a wood-paneled wall" width="1280" height="720" loading="lazy" decoding="async"></a>
+              <a href="assets/images/dataset/scene-04.webp" data-lightbox data-caption="Reading tables beside large windows" aria-label="Enlarge: Reading tables beside large windows"><img src="assets/images/dataset/scene-04.webp" alt="Reading tables beside large windows" width="1280" height="720" loading="lazy" decoding="async"></a>
+              <a href="assets/images/dataset/scene-05.webp" data-lightbox data-caption="White tables and chairs in an indoor seating area" aria-label="Enlarge: White tables and chairs in an indoor seating area"><img src="assets/images/dataset/scene-05.webp" alt="White tables and chairs in an indoor seating area" width="1280" height="720" loading="lazy" decoding="async"></a>
+              <a href="assets/images/dataset/scene-06.webp" data-lightbox data-caption="Sofa against a brick wall and curtains" aria-label="Enlarge: Sofa against a brick wall and curtains"><img src="assets/images/dataset/scene-06.webp" alt="Sofa against a brick wall and curtains" width="1280" height="720" loading="lazy" decoding="async"></a>
+              <a href="assets/images/dataset/scene-07.webp" data-lightbox data-caption="Bookshelves and indoor plants" aria-label="Enlarge: Bookshelves and indoor plants"><img src="assets/images/dataset/scene-07.webp" alt="Bookshelves and indoor plants" width="1280" height="720" loading="lazy" decoding="async"></a>
+              <a href="assets/images/dataset/scene-08.webp" data-lightbox data-caption="Curved glass partition in a library" aria-label="Enlarge: Curved glass partition in a library"><img src="assets/images/dataset/scene-08.webp" alt="Curved glass partition in a library" width="1280" height="720" loading="lazy" decoding="async"></a>
+              <a href="assets/images/dataset/scene-09.webp" data-lightbox data-caption="Classroom blackboard" aria-label="Enlarge: Classroom blackboard"><img src="assets/images/dataset/scene-09.webp" alt="Classroom blackboard" width="1280" height="720" loading="lazy" decoding="async"></a>
+              <a class="featured-scene" href="assets/images/dataset/scene-10.webp" data-lightbox data-caption="Stone path and a sheltered bench beside a pond" aria-label="Enlarge: Stone path and a sheltered bench beside a pond"><img src="assets/images/dataset/scene-10.webp" alt="Stone path and a sheltered bench beside a pond" width="1280" height="720" loading="lazy" decoding="async"></a>
+              <a href="assets/images/dataset/scene-11.webp" data-lightbox data-caption="Wooden bench along an outdoor walkway" aria-label="Enlarge: Wooden bench along an outdoor walkway"><img src="assets/images/dataset/scene-11.webp" alt="Wooden bench along an outdoor walkway" width="1280" height="720" loading="lazy" decoding="async"></a>
+              <a href="assets/images/dataset/scene-12.webp" data-lightbox data-caption="Brick steps and patterned paving beside a lawn" aria-label="Enlarge: Brick steps and patterned paving beside a lawn"><img src="assets/images/dataset/scene-12.webp" alt="Brick steps and patterned paving beside a lawn" width="1280" height="720" loading="lazy" decoding="async"></a>
+              <a href="assets/images/dataset/scene-13.webp" data-lightbox data-caption="Curved lawn border and patterned brick paving" aria-label="Enlarge: Curved lawn border and patterned brick paving"><img src="assets/images/dataset/scene-13.webp" alt="Curved lawn border and patterned brick paving" width="1280" height="720" loading="lazy" decoding="async"></a>
+              <a href="assets/images/dataset/scene-14.webp" data-lightbox data-caption="White picket fence beside a building" aria-label="Enlarge: White picket fence beside a building"><img src="assets/images/dataset/scene-14.webp" alt="White picket fence beside a building" width="1280" height="720" loading="lazy" decoding="async"></a>
+              <a href="assets/images/dataset/scene-15.webp" data-lightbox data-caption="Metal railing above outdoor steps" aria-label="Enlarge: Metal railing above outdoor steps"><img src="assets/images/dataset/scene-15.webp" alt="Metal railing above outdoor steps" width="1280" height="720" loading="lazy" decoding="async"></a>
+              <a href="assets/images/dataset/scene-16.webp" data-lightbox data-caption="Sunlit lawn beside a curved brick wall and walkway" aria-label="Enlarge: Sunlit lawn beside a curved brick wall and walkway"><img src="assets/images/dataset/scene-16.webp" alt="Sunlit lawn beside a curved brick wall and walkway" width="1280" height="720" loading="lazy" decoding="async"></a>
+              <a href="assets/images/dataset/scene-17.webp" data-lightbox data-caption="Lakeside wooden deck with white railings and trees" aria-label="Enlarge: Lakeside wooden deck with white railings and trees"><img src="assets/images/dataset/scene-17.webp" alt="Lakeside wooden deck with white railings and trees" width="1280" height="720" loading="lazy" decoding="async"></a>
+              <a href="assets/images/dataset/scene-18.webp" data-lightbox data-caption="Pond edge with stones and plants" aria-label="Enlarge: Pond edge with stones and plants"><img src="assets/images/dataset/scene-18.webp" alt="Pond edge with stones and plants" width="1280" height="720" loading="lazy" decoding="async"></a>
+            </div>
+          </figure>
+<!-- END DATASET GALLERY -->
+      </div>
+    </section>
+
+    <section class="section results-section" id="results" aria-labelledby="results-title">
+      <div class="container wide-container">
+        <div class="section-heading"><h2 id="results-title">Quantitative Results</h2></div>
+        <div class="results-carousel" role="region" aria-roledescription="carousel" aria-label="Main experiment tables" tabindex="0">
+          <p class="table-color-legend" id="table-color-legend" role="note" aria-label="Table ranking colors">Table highlights: <span class="table-color-key place-1">Best</span>, <span class="table-color-key place-2">Second best</span>, <span class="table-color-key place-3">Third best</span>.</p>
+          <button type="button" class="carousel-arrow previous" aria-label="Previous result table" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m16 3-12 9 12 9Z"/></svg></button>
+          <div class="carousel-viewport">
+<!-- BEGIN GENERATED RESULTS -->
+<article class="result-slide" id="image-estimation" aria-labelledby="image-estimation-title" data-slide="0">
+  <div class="slide-heading">
+    <h3 id="image-estimation-title">Image-level geometry estimation</h3>
+  </div>
+  <div class="table-scroll" tabindex="0" role="region" aria-label="Image-level geometry estimation results; scroll horizontally to see all metrics">
+    <table class="result-table" data-source="main_mono.tex">
+      <caption class="sr-only">Image-level geometry estimation. Normal: 76 scenes. Challenging: 24 scenes. AE in meters; threshold accuracies in percent.</caption>
+      <thead>
+        <tr><th rowspan="2" scope="col" class="model-col">Model</th><th colspan="8" scope="colgroup" class="normal-group">Normal <span>76 scenes</span></th><th colspan="8" scope="colgroup" class="challenging-group">Challenging <span>24 scenes</span></th></tr>
+        <tr>
+          <th scope="col">AE<span class="metric-direction">↓</span></th>
+          <th scope="col">RE<span class="metric-direction">↓</span></th>
+          <th scope="col">LE<span class="metric-direction">↓</span></th>
+          <th scope="col">RSD<span class="metric-direction">↓</span></th>
+          <th scope="col">δ<sub>1.05</sub><span class="metric-direction">↑</span></th>
+          <th scope="col">δ<sub>1.10</sub><span class="metric-direction">↑</span></th>
+          <th scope="col">δ<sub>1.25</sub><span class="metric-direction">↑</span></th>
+          <th scope="col">Rank<span class="metric-direction">↓</span></th>
+          <th scope="col" class="subset-start">AE<span class="metric-direction">↓</span></th>
+          <th scope="col">RE<span class="metric-direction">↓</span></th>
+          <th scope="col">LE<span class="metric-direction">↓</span></th>
+          <th scope="col">RSD<span class="metric-direction">↓</span></th>
+          <th scope="col">δ<sub>1.05</sub><span class="metric-direction">↑</span></th>
+          <th scope="col">δ<sub>1.10</sub><span class="metric-direction">↑</span></th>
+          <th scope="col">δ<sub>1.25</sub><span class="metric-direction">↑</span></th>
+          <th scope="col">Rank<span class="metric-direction">↓</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><th scope="row" class="model-col">Metric3D</th><td>1.180</td><td>1.695</td><td>0.828</td><td>0.347</td><td>8.02</td><td>14.68</td><td>27.82</td><td>8.00</td><td class="subset-start">5.004</td><td>9.273</td><td>1.299</td><td>0.672</td><td>7.68</td><td>14.13</td><td>23.11</td><td>8.00</td></tr>
+        <tr><th scope="row" class="model-col">MoGe-3</th><td>0.208</td><td>0.292</td><td>0.236</td><td class="place-2" data-place="2">0.084</td><td>18.89</td><td>35.49</td><td>59.89</td><td>6.00</td><td class="subset-start place-1" data-place="1">0.158</td><td class="place-1" data-place="1">0.275</td><td class="place-1" data-place="1">0.228</td><td class="place-1" data-place="1">0.112</td><td>12.63</td><td>26.82</td><td>58.20</td><td class="place-2" data-place="2">3.00</td></tr>
+        <tr><th scope="row" class="model-col">Depth Pro</th><td class="place-3" data-place="3">0.135</td><td>0.196</td><td>0.234</td><td>0.154</td><td>17.74</td><td>32.98</td><td>65.30</td><td>5.57</td><td class="subset-start place-2" data-place="2">0.171</td><td class="place-3" data-place="3">0.426</td><td class="place-2" data-place="2">0.250</td><td class="place-3" data-place="3">0.220</td><td>15.82</td><td>31.58</td><td class="place-1" data-place="1">68.10</td><td class="place-1" data-place="1">2.86</td></tr>
+        <tr><th scope="row" class="model-col">Unidepth</th><td>0.159</td><td>0.220</td><td>0.207</td><td>0.134</td><td>20.00</td><td>38.38</td><td class="place-3" data-place="3">68.44</td><td>4.86</td><td class="subset-start">0.943</td><td>1.941</td><td>0.676</td><td>0.337</td><td>15.10</td><td>26.24</td><td>42.90</td><td>6.29</td></tr>
+        <tr><th scope="row" class="model-col">MoGe-2</th><td>0.176</td><td>0.242</td><td>0.204</td><td class="place-3" data-place="3">0.086</td><td>23.40</td><td>40.93</td><td>63.08</td><td>4.71</td><td class="subset-start place-3" data-place="3">0.202</td><td class="place-2" data-place="2">0.355</td><td class="place-3" data-place="3">0.258</td><td class="place-2" data-place="2">0.206</td><td>15.95</td><td>30.21</td><td>57.03</td><td class="place-3" data-place="3">3.43</td></tr>
+        <tr><th scope="row" class="model-col">MetricAnything</th><td>0.145</td><td class="place-3" data-place="3">0.194</td><td class="place-3" data-place="3">0.176</td><td>0.089</td><td class="place-3" data-place="3">25.00</td><td class="place-3" data-place="3">41.28</td><td>66.96</td><td class="place-3" data-place="3">3.43</td><td class="subset-start">0.333</td><td>0.743</td><td>0.315</td><td>0.242</td><td class="place-3" data-place="3">18.68</td><td class="place-3" data-place="3">35.35</td><td class="place-3" data-place="3">64.84</td><td>3.57</td></tr>
+        <tr><th scope="row" class="model-col">Unidepthv2</th><td class="place-2" data-place="2">0.099</td><td class="place-2" data-place="2">0.136</td><td class="place-2" data-place="2">0.137</td><td>0.097</td><td class="place-2" data-place="2">26.01</td><td class="place-2" data-place="2">48.48</td><td class="place-2" data-place="2">79.61</td><td class="place-2" data-place="2">2.43</td><td class="subset-start">1.059</td><td>2.644</td><td>0.583</td><td>0.290</td><td class="place-2" data-place="2">19.53</td><td class="place-2" data-place="2">37.37</td><td>54.69</td><td>4.86</td></tr>
+        <tr><th scope="row" class="model-col">Metric3D v2</th><td class="place-1" data-place="1">0.073</td><td class="place-1" data-place="1">0.106</td><td class="place-1" data-place="1">0.104</td><td class="place-1" data-place="1">0.068</td><td class="place-1" data-place="1">31.00</td><td class="place-1" data-place="1">56.00</td><td class="place-1" data-place="1">90.42</td><td class="place-1" data-place="1">1.00</td><td class="subset-start">1.126</td><td>1.854</td><td>0.513</td><td>0.434</td><td class="place-1" data-place="1">20.57</td><td class="place-1" data-place="1">41.99</td><td class="place-2" data-place="2">65.95</td><td>4.00</td></tr>
+      </tbody>
+    </table>
+  </div>
+</article>
+
+<article class="result-slide" id="video-estimation" aria-labelledby="video-estimation-title" data-slide="1">
+  <div class="slide-heading">
+    <h3 id="video-estimation-title">Video-level geometry estimation</h3>
+  </div>
+  <div class="table-scroll" tabindex="0" role="region" aria-label="Video-level geometry estimation results; scroll horizontally to see all metrics">
+    <table class="result-table" data-source="main_mvs.tex">
+      <caption class="sr-only">Video-level geometry estimation. Normal: 76 scenes. Challenging: 24 scenes. AE in meters; threshold accuracies in percent.</caption>
+      <thead>
+        <tr><th rowspan="2" scope="col" class="model-col">Model</th><th colspan="8" scope="colgroup" class="normal-group">Normal <span>76 scenes</span></th><th colspan="8" scope="colgroup" class="challenging-group">Challenging <span>24 scenes</span></th></tr>
+        <tr>
+          <th scope="col">AE<span class="metric-direction">↓</span></th>
+          <th scope="col">RE<span class="metric-direction">↓</span></th>
+          <th scope="col">LE<span class="metric-direction">↓</span></th>
+          <th scope="col">RSD<span class="metric-direction">↓</span></th>
+          <th scope="col">δ<sub>1.05</sub><span class="metric-direction">↑</span></th>
+          <th scope="col">δ<sub>1.10</sub><span class="metric-direction">↑</span></th>
+          <th scope="col">δ<sub>1.25</sub><span class="metric-direction">↑</span></th>
+          <th scope="col">Rank<span class="metric-direction">↓</span></th>
+          <th scope="col" class="subset-start">AE<span class="metric-direction">↓</span></th>
+          <th scope="col">RE<span class="metric-direction">↓</span></th>
+          <th scope="col">LE<span class="metric-direction">↓</span></th>
+          <th scope="col">RSD<span class="metric-direction">↓</span></th>
+          <th scope="col">δ<sub>1.05</sub><span class="metric-direction">↑</span></th>
+          <th scope="col">δ<sub>1.10</sub><span class="metric-direction">↑</span></th>
+          <th scope="col">δ<sub>1.25</sub><span class="metric-direction">↑</span></th>
+          <th scope="col">Rank<span class="metric-direction">↓</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><th scope="row" class="model-col">MapAnything</th><td>0.295</td><td>0.404</td><td>0.312</td><td class="place-3" data-place="3">0.061</td><td>9.14</td><td>18.79</td><td>37.66</td><td>5.57</td><td class="subset-start">0.560</td><td>1.750</td><td>0.440</td><td class="place-3" data-place="3">0.190</td><td>4.90</td><td>8.40</td><td>43.40</td><td>4.43</td></tr>
+        <tr><th scope="row" class="model-col">MASt3R</th><td>0.126</td><td>0.188</td><td>0.207</td><td>0.088</td><td>16.26</td><td>31.90</td><td>62.48</td><td>4.57</td><td class="subset-start">1.036</td><td>2.206</td><td>0.677</td><td>0.515</td><td>11.47</td><td>18.59</td><td>38.26</td><td>5.57</td></tr>
+        <tr><th scope="row" class="model-col">pi3x</th><td>0.129</td><td>0.184</td><td>0.206</td><td class="place-2" data-place="2">0.037</td><td>18.35</td><td>34.08</td><td>60.80</td><td>4.00</td><td class="subset-start place-2" data-place="2">0.185</td><td class="place-1" data-place="1">0.402</td><td class="place-2" data-place="2">0.254</td><td class="place-1" data-place="1">0.136</td><td class="place-3" data-place="3">11.48</td><td class="place-3" data-place="3">25.38</td><td class="place-3" data-place="3">63.09</td><td class="place-2" data-place="2">2.14</td></tr>
+        <tr><th scope="row" class="model-col">MUSt3R</th><td class="place-3" data-place="3">0.120</td><td class="place-3" data-place="3">0.174</td><td class="place-3" data-place="3">0.193</td><td>0.095</td><td class="place-2" data-place="2">22.71</td><td class="place-3" data-place="3">38.96</td><td class="place-3" data-place="3">67.50</td><td class="place-3" data-place="3">3.29</td><td class="subset-start">0.996</td><td>2.116</td><td>0.671</td><td>0.497</td><td>10.69</td><td>19.36</td><td>41.99</td><td>4.86</td></tr>
+        <tr><th scope="row" class="model-col">CUT3R</th><td class="place-2" data-place="2">0.110</td><td class="place-2" data-place="2">0.155</td><td class="place-2" data-place="2">0.156</td><td>0.090</td><td class="place-3" data-place="3">22.65</td><td class="place-2" data-place="2">42.39</td><td class="place-2" data-place="2">76.12</td><td class="place-2" data-place="2">2.57</td><td class="subset-start place-3" data-place="3">0.330</td><td class="place-3" data-place="3">0.646</td><td class="place-3" data-place="3">0.342</td><td>0.310</td><td class="place-2" data-place="2">17.49</td><td class="place-2" data-place="2">33.85</td><td class="place-2" data-place="2">63.27</td><td class="place-3" data-place="3">2.71</td></tr>
+        <tr><th scope="row" class="model-col">Depth Anything 3</th><td class="place-1" data-place="1">0.078</td><td class="place-1" data-place="1">0.108</td><td class="place-1" data-place="1">0.102</td><td class="place-1" data-place="1">0.029</td><td class="place-1" data-place="1">30.52</td><td class="place-1" data-place="1">54.16</td><td class="place-1" data-place="1">92.25</td><td class="place-1" data-place="1">1.00</td><td class="subset-start place-1" data-place="1">0.167</td><td class="place-2" data-place="2">0.432</td><td class="place-1" data-place="1">0.219</td><td class="place-2" data-place="2">0.174</td><td class="place-1" data-place="1">21.16</td><td class="place-1" data-place="1">38.66</td><td class="place-1" data-place="1">81.56</td><td class="place-1" data-place="1">1.29</td></tr>
+      </tbody>
+    </table>
+  </div>
+</article>
+
+<article class="result-slide" id="image-completion" aria-labelledby="image-completion-title" data-slide="2">
+  <div class="slide-heading">
+    <h3 id="image-completion-title">Image-level geometry completion</h3>
+  </div>
+  <div class="table-scroll" tabindex="0" role="region" aria-label="Image-level geometry completion results; scroll horizontally to see all metrics">
+    <table class="result-table" data-source="main_mono_cmpl.tex">
+      <caption class="sr-only">Image-level geometry completion. Normal: 76 scenes. Challenging: 24 scenes. AE in meters; threshold accuracies in percent.</caption>
+      <thead>
+        <tr><th rowspan="2" scope="col" class="model-col">Model</th><th colspan="8" scope="colgroup" class="normal-group">Normal <span>76 scenes</span></th><th colspan="8" scope="colgroup" class="challenging-group">Challenging <span>24 scenes</span></th></tr>
+        <tr>
+          <th scope="col">AE<span class="metric-direction">↓</span></th>
+          <th scope="col">RE<span class="metric-direction">↓</span></th>
+          <th scope="col">LE<span class="metric-direction">↓</span></th>
+          <th scope="col">RSD<span class="metric-direction">↓</span></th>
+          <th scope="col">δ<sub>1.05</sub><span class="metric-direction">↑</span></th>
+          <th scope="col">δ<sub>1.10</sub><span class="metric-direction">↑</span></th>
+          <th scope="col">δ<sub>1.25</sub><span class="metric-direction">↑</span></th>
+          <th scope="col">Rank<span class="metric-direction">↓</span></th>
+          <th scope="col" class="subset-start">AE<span class="metric-direction">↓</span></th>
+          <th scope="col">RE<span class="metric-direction">↓</span></th>
+          <th scope="col">LE<span class="metric-direction">↓</span></th>
+          <th scope="col">RSD<span class="metric-direction">↓</span></th>
+          <th scope="col">δ<sub>1.05</sub><span class="metric-direction">↑</span></th>
+          <th scope="col">δ<sub>1.10</sub><span class="metric-direction">↑</span></th>
+          <th scope="col">δ<sub>1.25</sub><span class="metric-direction">↑</span></th>
+          <th scope="col">Rank<span class="metric-direction">↓</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><th scope="row" class="model-col">PromptDA</th><td>0.081</td><td>0.111</td><td>0.108</td><td>0.145</td><td>54.26</td><td>72.88</td><td>87.75</td><td>9.71</td><td class="subset-start place-2" data-place="2">1.412</td><td class="place-1" data-place="1">2.610</td><td class="place-3" data-place="3">0.871</td><td>0.727</td><td>9.90</td><td>17.84</td><td>28.91</td><td>5.86</td></tr>
+        <tr><th scope="row" class="model-col">Marigold-dc</th><td>0.077</td><td>0.112</td><td>0.079</td><td>0.153</td><td>63.38</td><td>79.38</td><td>92.33</td><td>9.29</td><td class="subset-start">3.813</td><td>8.175</td><td>1.296</td><td>0.783</td><td>12.04</td><td>18.29</td><td>29.23</td><td>8.71</td></tr>
+        <tr><th scope="row" class="model-col">CDM-L515</th><td>0.046</td><td>0.057</td><td>0.056</td><td class="place-2" data-place="2">0.050</td><td>64.14</td><td>86.99</td><td>97.10</td><td>7.00</td><td class="subset-start place-3" data-place="3">2.569</td><td>7.541</td><td class="place-2" data-place="2">0.759</td><td class="place-3" data-place="3">0.672</td><td class="place-3" data-place="3">26.43</td><td class="place-2" data-place="2">38.93</td><td class="place-2" data-place="2">50.59</td><td class="place-2" data-place="2">3.00</td></tr>
+        <tr><th scope="row" class="model-col">CDM-D435</th><td>0.043</td><td>0.053</td><td>0.051</td><td class="place-3" data-place="3">0.052</td><td>71.57</td><td>87.69</td><td>96.69</td><td>6.43</td><td class="subset-start">2.721</td><td class="place-3" data-place="3">5.079</td><td>0.907</td><td class="place-2" data-place="2">0.462</td><td class="place-2" data-place="2">26.69</td><td class="place-3" data-place="3">37.24</td><td class="place-3" data-place="3">48.37</td><td class="place-3" data-place="3">3.14</td></tr>
+        <tr><th scope="row" class="model-col">DepthLab</th><td>0.031</td><td>0.046</td><td>0.044</td><td>0.064</td><td>69.65</td><td>89.14</td><td class="place-3" data-place="3">98.70</td><td>5.57</td><td class="subset-start">4.010</td><td>8.394</td><td>1.237</td><td>0.837</td><td>17.06</td><td>24.02</td><td>34.38</td><td>8.71</td></tr>
+        <tr><th scope="row" class="model-col">PriorDA</th><td>0.037</td><td>0.048</td><td>0.041</td><td>0.067</td><td class="place-3" data-place="3">78.54</td><td class="place-2" data-place="2">93.61</td><td>98.52</td><td>5.00</td><td class="subset-start">2.602</td><td>5.383</td><td>0.990</td><td>0.730</td><td>20.83</td><td>30.27</td><td>45.31</td><td>4.86</td></tr>
+        <tr><th scope="row" class="model-col">InfiniDepth</th><td>0.028</td><td>0.041</td><td>0.039</td><td>0.057</td><td>77.55</td><td>91.84</td><td>98.33</td><td>4.86</td><td class="subset-start">3.129</td><td>6.066</td><td>1.072</td><td>0.705</td><td>26.37</td><td>33.40</td><td>43.55</td><td>4.86</td></tr>
+        <tr><th scope="row" class="model-col">LDCM</th><td class="place-2" data-place="2">0.025</td><td class="place-3" data-place="3">0.038</td><td class="place-2" data-place="2">0.036</td><td>0.056</td><td class="place-2" data-place="2">78.95</td><td class="place-3" data-place="3">92.82</td><td>98.66</td><td class="place-3" data-place="3">3.00</td><td class="subset-start">3.975</td><td>8.158</td><td>1.209</td><td>0.897</td><td>21.68</td><td>27.60</td><td>37.43</td><td>7.43</td></tr>
+        <tr><th scope="row" class="model-col">Omni-dc</th><td class="place-2" data-place="2">0.025</td><td class="place-2" data-place="2">0.037</td><td class="place-2" data-place="2">0.036</td><td>0.055</td><td>77.98</td><td>92.72</td><td class="place-2" data-place="2">98.85</td><td class="place-2" data-place="2">2.86</td><td class="subset-start">3.739</td><td>7.817</td><td>1.185</td><td>0.845</td><td>19.34</td><td>26.17</td><td>37.17</td><td>7.29</td></tr>
+        <tr><th scope="row" class="model-col">Lingbot-Depth</th><td class="place-1" data-place="1">0.022</td><td class="place-1" data-place="1">0.029</td><td class="place-1" data-place="1">0.028</td><td class="place-1" data-place="1">0.034</td><td class="place-1" data-place="1">84.52</td><td class="place-1" data-place="1">98.46</td><td class="place-1" data-place="1">99.81</td><td class="place-1" data-place="1">1.00</td><td class="subset-start place-1" data-place="1">1.045</td><td class="place-2" data-place="2">2.628</td><td class="place-1" data-place="1">0.576</td><td class="place-1" data-place="1">0.386</td><td class="place-1" data-place="1">47.92</td><td class="place-1" data-place="1">58.98</td><td class="place-1" data-place="1">67.12</td><td class="place-1" data-place="1">1.14</td></tr>
+      </tbody>
+    </table>
+  </div>
+</article>
+
+<article class="result-slide" id="video-completion" aria-labelledby="video-completion-title" data-slide="3">
+  <div class="slide-heading">
+    <h3 id="video-completion-title">Video-level geometry completion</h3>
+  </div>
+  <div class="table-scroll" tabindex="0" role="region" aria-label="Video-level geometry completion results; scroll horizontally to see all metrics">
+    <table class="result-table" data-source="main_mvs_cmpl.tex">
+      <caption class="sr-only">Video-level geometry completion. Normal: 76 scenes. Challenging: 24 scenes. AE in meters; threshold accuracies in percent.</caption>
+      <thead>
+        <tr><th rowspan="2" scope="col" class="model-col">Model</th><th colspan="8" scope="colgroup" class="normal-group">Normal <span>76 scenes</span></th><th colspan="8" scope="colgroup" class="challenging-group">Challenging <span>24 scenes</span></th></tr>
+        <tr>
+          <th scope="col">AE<span class="metric-direction">↓</span></th>
+          <th scope="col">RE<span class="metric-direction">↓</span></th>
+          <th scope="col">LE<span class="metric-direction">↓</span></th>
+          <th scope="col">RSD<span class="metric-direction">↓</span></th>
+          <th scope="col">δ<sub>1.05</sub><span class="metric-direction">↑</span></th>
+          <th scope="col">δ<sub>1.10</sub><span class="metric-direction">↑</span></th>
+          <th scope="col">δ<sub>1.25</sub><span class="metric-direction">↑</span></th>
+          <th scope="col">Rank<span class="metric-direction">↓</span></th>
+          <th scope="col" class="subset-start">AE<span class="metric-direction">↓</span></th>
+          <th scope="col">RE<span class="metric-direction">↓</span></th>
+          <th scope="col">LE<span class="metric-direction">↓</span></th>
+          <th scope="col">RSD<span class="metric-direction">↓</span></th>
+          <th scope="col">δ<sub>1.05</sub><span class="metric-direction">↑</span></th>
+          <th scope="col">δ<sub>1.10</sub><span class="metric-direction">↑</span></th>
+          <th scope="col">δ<sub>1.25</sub><span class="metric-direction">↑</span></th>
+          <th scope="col">Rank<span class="metric-direction">↓</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><th scope="row" class="model-col">pi3x</th><td>0.097</td><td>0.131</td><td>0.139</td><td>0.062</td><td>26.43</td><td>44.76</td><td>80.46</td><td>5.00</td><td class="subset-start">2.811</td><td>5.781</td><td>1.079</td><td>0.911</td><td>8.42</td><td>15.91</td><td>37.83</td><td>4.43</td></tr>
+        <tr><th scope="row" class="model-col">MapAnything</th><td>0.028</td><td>0.040</td><td>0.038</td><td>0.053</td><td>77.44</td><td>93.67</td><td>98.76</td><td>4.00</td><td class="subset-start">3.334</td><td>7.172</td><td>1.117</td><td>0.839</td><td>20.96</td><td class="place-3" data-place="3">28.61</td><td class="place-3" data-place="3">39.64</td><td>4.14</td></tr>
+        <tr><th scope="row" class="model-col">CAPA-MoGe2</th><td class="place-3" data-place="3">0.019</td><td class="place-2" data-place="2">0.027</td><td class="place-2" data-place="2">0.027</td><td class="place-1" data-place="1">0.027</td><td class="place-3" data-place="3">85.42</td><td class="place-3" data-place="3">96.95</td><td class="place-2" data-place="2">99.76</td><td class="place-3" data-place="3">2.29</td><td class="subset-start place-1" data-place="1">2.351</td><td class="place-1" data-place="1">4.692</td><td class="place-2" data-place="2">1.037</td><td class="place-1" data-place="1">0.524</td><td class="place-3" data-place="3">21.43</td><td>26.26</td><td>37.07</td><td class="place-2" data-place="2">2.43</td></tr>
+        <tr><th scope="row" class="model-col">CAPA-Unidepthv2</th><td class="place-2" data-place="2">0.018</td><td class="place-2" data-place="2">0.027</td><td class="place-2" data-place="2">0.027</td><td class="place-1" data-place="1">0.027</td><td class="place-2" data-place="2">86.15</td><td class="place-2" data-place="2">97.25</td><td class="place-2" data-place="2">99.76</td><td class="place-2" data-place="2">1.86</td><td class="subset-start place-3" data-place="3">2.522</td><td class="place-3" data-place="3">4.99</td><td class="place-3" data-place="3">1.041</td><td class="place-3" data-place="3">0.607</td><td class="place-2" data-place="2">25.69</td><td class="place-2" data-place="2">31.94</td><td class="place-2" data-place="2">41.97</td><td class="place-3" data-place="3">2.57</td></tr>
+        <tr><th scope="row" class="model-col">CAPA-VGGT</th><td class="place-1" data-place="1">0.016</td><td class="place-1" data-place="1">0.022</td><td class="place-1" data-place="1">0.022</td><td class="place-3" data-place="3">0.028</td><td class="place-1" data-place="1">91.44</td><td class="place-1" data-place="1">98.71</td><td class="place-1" data-place="1">99.89</td><td class="place-1" data-place="1">1.29</td><td class="subset-start place-2" data-place="2">2.352</td><td class="place-2" data-place="2">4.811</td><td class="place-1" data-place="1">0.974</td><td class="place-2" data-place="2">0.604</td><td class="place-1" data-place="1">31.48</td><td class="place-1" data-place="1">38.14</td><td class="place-1" data-place="1">44.87</td><td class="place-1" data-place="1">1.43</td></tr>
+      </tbody>
+    </table>
+  </div>
+</article>
+<!-- END GENERATED RESULTS -->
+          </div>
+          <button type="button" class="carousel-arrow next" aria-label="Next result table" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 3 12 9-12 9Z"/></svg></button>
+        </div>
+        <div class="carousel-footer" hidden><div class="carousel-dots" role="group" aria-label="Result table pages"><button type="button" data-goto="0" aria-label="Table 1: Image estimation" aria-current="true"></button><button type="button" data-goto="1" aria-label="Table 2: Video estimation"></button><button type="button" data-goto="2" aria-label="Table 3: Image completion"></button><button type="button" data-goto="3" aria-label="Table 4: Video completion"></button></div><p class="sr-only carousel-status" id="carousel-status" aria-live="polite" aria-atomic="true"></p></div>
+      </div>
+    </section>
+
+    <section class="section findings-section" id="findings" aria-labelledby="findings-title">
+      <div class="container">
+        <div class="section-heading"><h2 id="findings-title">Comprehensive Insights</h2></div>
+        <article class="finding finding-coupling" id="finding-1" aria-labelledby="finding-1-title">
+          <div class="finding-copy"><p class="finding-index">Finding 1</p><h3 id="finding-1-title">Direct evaluation of point-pair distance estimation.</h3><p class="finding-statement">The coupling between predicted depth and camera intrinsics renders their separate evaluation insufficient for reliably characterizing point-pair distance estimation.</p></div>
+<!-- BEGIN FINDING ONE TABLES -->
+          <div class="finding-tables">
+            <section class="finding-table-panel rank-panel" aria-labelledby="rank-summary-title">
+              <h4 id="rank-summary-title">Depth and intrinsics benchmark rankings</h4>
+              <p class="finding-table-note">Average rank ↓ across 12 depth metrics and 24 intrinsics metrics. <strong>Bold</strong>: best; <u>underlined</u>: second best.</p>
+              <div class="finding-table-scroll" role="region" tabindex="0" aria-label="Depth and intrinsics benchmark rankings; scroll horizontally if needed">
+                <table class="finding-data-table rank-summary-table" data-source-label="tab:rank_summary">
+                  <caption class="sr-only">Average rank on the depth benchmark (12 metrics) and intrinsics benchmark (24 metrics). Lower is better.</caption>
+                  <thead><tr><th scope="col">Benchmark</th><th scope="col">Depth Pro</th><th scope="col">MoGe-2</th><th scope="col">MetricAnything</th><th scope="col">Unidepth</th><th scope="col">Unidepthv2</th></tr></thead>
+                  <tbody>
+                    <tr><th scope="row">Depth benchmark</th><td>4.25</td><td>2.83</td><td data-emphasis="second"><u>2.75</u></td><td data-emphasis="best"><strong>2.08</strong></td><td>2.83</td></tr>
+                    <tr><th scope="row">Intrinsics benchmark</th><td>2.89</td><td data-emphasis="best"><strong>1.00</strong></td><td data-emphasis="second"><u>1.50</u></td><td>3.46</td><td>3.83</td></tr>
+                    <tr class="overall-rank"><th scope="row">Overall rank</th><td>3.57</td><td data-emphasis="best"><strong>1.92</strong></td><td data-emphasis="second"><u>2.13</u></td><td>2.77</td><td>3.33</td></tr>
+                  </tbody></table></div>
+              <details class="benchmark-details" id="benchmark-details">
+                <summary class="benchmark-toggle"><span class="details-closed-label">See detailed results</span><span class="details-open-label">Hide detailed results</span></summary>
+                <div class="benchmark-details-content">
+                  <section class="benchmark-section" aria-labelledby="depth-benchmark-title">
+                    <h5 id="depth-benchmark-title">Depth benchmark results for image-level metric geometry estimation models.</h5>
+<div class="finding-table-scroll" role="region" tabindex="0" aria-label="NYU-D / KITTI / DIODE / ETH3D depth benchmark results; scroll horizontally if needed">
+<table class="finding-data-table benchmark-data-table depth-benchmark-table" data-source-label="tab:dpt_bench" data-dataset="NYU-D / KITTI / DIODE / ETH3D">
+<caption class="sr-only">NYU-D / KITTI / DIODE / ETH3D depth benchmark results</caption>
+<thead><tr><th scope="col" rowspan="2">Model</th>
+<th scope="colgroup" colspan="3">NYU-D</th>
+<th scope="colgroup" colspan="3">KITTI</th>
+<th scope="colgroup" colspan="3">DIODE</th>
+<th scope="colgroup" colspan="3">ETH3D</th>
+</tr><tr>
+<th scope="col">AbsRel ↓</th>
+<th scope="col">L1 (m) ↓</th>
+<th scope="col">δ<sub>1.25</sub> ↑</th>
+<th scope="col">AbsRel ↓</th>
+<th scope="col">L1 (m) ↓</th>
+<th scope="col">δ<sub>1.25</sub> ↑</th>
+<th scope="col">AbsRel ↓</th>
+<th scope="col">L1 (m) ↓</th>
+<th scope="col">δ<sub>1.25</sub> ↑</th>
+<th scope="col">AbsRel ↓</th>
+<th scope="col">L1 (m) ↓</th>
+<th scope="col">δ<sub>1.25</sub> ↑</th>
+</tr></thead><tbody>
+<tr><th scope="row">Depth Pro</th>
+<td>0.09</td>
+<td>0.25</td>
+<td>0.93</td>
+<td>0.14</td>
+<td>2.34</td>
+<td>0.83</td>
+<td>0.40</td>
+<td>4.46</td>
+<td>0.41</td>
+<td>0.38</td>
+<td>3.25</td>
+<td>0.33</td>
+</tr>
+<tr><th scope="row">MoGe-2</th>
+<td>0.08</td>
+<td>0.21</td>
+<td>0.96</td>
+<td>0.21</td>
+<td>3.59</td>
+<td>0.45</td>
+<td class="place-2" data-place="2">0.33</td>
+<td class="place-2" data-place="2">2.62</td>
+<td>0.54</td>
+<td class="place-1" data-place="1">0.10</td>
+<td class="place-1" data-place="1">0.62</td>
+<td class="place-2" data-place="2">0.88</td>
+</tr>
+<tr><th scope="row">MetricAnything</th>
+<td>0.10</td>
+<td>0.27</td>
+<td>0.94</td>
+<td class="place-2" data-place="2">0.09</td>
+<td>1.60</td>
+<td>0.94</td>
+<td>0.34</td>
+<td class="place-1" data-place="1">2.49</td>
+<td class="place-2" data-place="2">0.65</td>
+<td class="place-2" data-place="2">0.11</td>
+<td class="place-2" data-place="2">0.67</td>
+<td class="place-1" data-place="1">0.90</td>
+</tr>
+<tr><th scope="row">Unidepth</th>
+<td class="place-1" data-place="1">0.06</td>
+<td class="place-1" data-place="1">0.14</td>
+<td class="place-1" data-place="1">0.98</td>
+<td class="place-1" data-place="1">0.05</td>
+<td class="place-1" data-place="1">1.04</td>
+<td class="place-1" data-place="1">0.98</td>
+<td class="place-1" data-place="1">0.27</td>
+<td>2.64</td>
+<td class="place-1" data-place="1">0.67</td>
+<td>0.58</td>
+<td>3.20</td>
+<td>0.14</td>
+</tr>
+<tr><th scope="row">Unidepthv2</th>
+<td class="place-2" data-place="2">0.07</td>
+<td class="place-2" data-place="2">0.18</td>
+<td class="place-2" data-place="2">0.96</td>
+<td>0.09</td>
+<td class="place-2" data-place="2">1.58</td>
+<td class="place-2" data-place="2">0.95</td>
+<td>0.78</td>
+<td>7.07</td>
+<td>0.54</td>
+<td>0.21</td>
+<td>1.23</td>
+<td>0.68</td>
+</tr>
+</tbody></table></div>
+                  </section>
+                  <section class="benchmark-section" aria-labelledby="intrinsics-benchmark-title">
+                    <h5 id="intrinsics-benchmark-title">Intrinsics benchmark results for image-level metric geometry estimation models.</h5>
+                    <p class="benchmark-note">@1/5/10° refer to AUC@1/5/10°. vFoV, hFoV refer to vertical FoV and horizontal FoV.  Methods trained on evaluated datasets are in <span class="benchmark-excluded">gray</span> and excluded from the ranking to ensure a fair comparison</p>
+                    <div class="intrinsics-benchmark-grid">
+                      <div class="intrinsics-benchmark-panel">
+                        <h6>LaMAR-2K</h6>
+<div class="finding-table-scroll" role="region" tabindex="0" aria-label="LaMAR-2K intrinsics benchmark results; scroll horizontally if needed">
+<table class="finding-data-table benchmark-data-table intrinsics-benchmark-table" data-source-label="tab:fov_bench" data-dataset="LaMAR-2K">
+<caption class="sr-only">LaMAR-2K intrinsics benchmark results</caption>
+<thead><tr><th scope="col" rowspan="2">Model</th>
+<th scope="colgroup" colspan="3">vFoV</th>
+<th scope="colgroup" colspan="3">hFoV</th>
+</tr><tr>
+<th scope="col">@1°</th>
+<th scope="col">@5°</th>
+<th scope="col">@10°</th>
+<th scope="col">@1°</th>
+<th scope="col">@5°</th>
+<th scope="col">@10°</th>
+</tr></thead><tbody>
+<tr><th scope="row">Depth Pro</th>
+<td>0.121</td>
+<td>0.235</td>
+<td>0.377</td>
+<td>0.136</td>
+<td>0.260</td>
+<td>0.447</td>
+</tr>
+<tr><th scope="row">MoGe-2</th>
+<td class="place-1" data-place="1">0.243</td>
+<td class="place-1" data-place="1">0.526</td>
+<td class="place-1" data-place="1">0.727</td>
+<td class="place-1" data-place="1">0.287</td>
+<td class="place-1" data-place="1">0.581</td>
+<td class="place-1" data-place="1">0.766</td>
+</tr>
+<tr><th scope="row">MetricAnything</th>
+<td class="place-2" data-place="2">0.224</td>
+<td class="place-2" data-place="2">0.493</td>
+<td class="place-2" data-place="2">0.698</td>
+<td class="place-2" data-place="2">0.262</td>
+<td class="place-2" data-place="2">0.548</td>
+<td class="place-2" data-place="2">0.743</td>
+</tr>
+<tr><th scope="row">Unidepth</th>
+<td>0.051</td>
+<td>0.371</td>
+<td>0.491</td>
+<td>0.015</td>
+<td>0.324</td>
+<td>0.479</td>
+</tr>
+<tr><th scope="row">Unidepthv2</th>
+<td>0.040</td>
+<td>0.123</td>
+<td>0.312</td>
+<td>0.055</td>
+<td>0.193</td>
+<td>0.423</td>
+</tr>
+</tbody></table></div>
+                      </div>
+                      <div class="intrinsics-benchmark-panel">
+                        <h6>MegaDepth-2K</h6>
+<div class="finding-table-scroll" role="region" tabindex="0" aria-label="MegaDepth-2K intrinsics benchmark results; scroll horizontally if needed">
+<table class="finding-data-table benchmark-data-table intrinsics-benchmark-table" data-source-label="tab:fov_bench" data-dataset="MegaDepth-2K">
+<caption class="sr-only">MegaDepth-2K intrinsics benchmark results</caption>
+<thead><tr><th scope="col" rowspan="2">Model</th>
+<th scope="colgroup" colspan="3">vFoV</th>
+<th scope="colgroup" colspan="3">hFoV</th>
+</tr><tr>
+<th scope="col">@1°</th>
+<th scope="col">@5°</th>
+<th scope="col">@10°</th>
+<th scope="col">@1°</th>
+<th scope="col">@5°</th>
+<th scope="col">@10°</th>
+</tr></thead><tbody>
+<tr><th scope="row">Depth Pro</th>
+<td class="place-2" data-place="2">0.196</td>
+<td class="place-2" data-place="2">0.449</td>
+<td class="place-2" data-place="2">0.660</td>
+<td class="place-2" data-place="2">0.176</td>
+<td class="place-2" data-place="2">0.423</td>
+<td class="place-2" data-place="2">0.636</td>
+</tr>
+<tr><th scope="row">MoGe-2</th>
+<td class="benchmark-excluded" data-excluded="true" title="Trained on this dataset; excluded from ranking">0.176</td>
+<td class="benchmark-excluded" data-excluded="true" title="Trained on this dataset; excluded from ranking">0.412</td>
+<td class="benchmark-excluded" data-excluded="true" title="Trained on this dataset; excluded from ranking">0.618</td>
+<td class="benchmark-excluded" data-excluded="true" title="Trained on this dataset; excluded from ranking">0.174</td>
+<td class="benchmark-excluded" data-excluded="true" title="Trained on this dataset; excluded from ranking">0.397</td>
+<td class="benchmark-excluded" data-excluded="true" title="Trained on this dataset; excluded from ranking">0.593</td>
+</tr>
+<tr><th scope="row">MetricAnything</th>
+<td class="place-1" data-place="1">0.270</td>
+<td class="place-1" data-place="1">0.537</td>
+<td class="place-1" data-place="1">0.722</td>
+<td class="place-1" data-place="1">0.252</td>
+<td class="place-1" data-place="1">0.514</td>
+<td class="place-1" data-place="1">0.702</td>
+</tr>
+<tr><th scope="row">Unidepth</th>
+<td>0.068</td>
+<td>0.162</td>
+<td>0.274</td>
+<td>0.058</td>
+<td>0.149</td>
+<td>0.253</td>
+</tr>
+<tr><th scope="row">Unidepthv2</th>
+<td class="benchmark-excluded" data-excluded="true" title="Trained on this dataset; excluded from ranking">0.124</td>
+<td class="benchmark-excluded" data-excluded="true" title="Trained on this dataset; excluded from ranking">0.305</td>
+<td class="benchmark-excluded" data-excluded="true" title="Trained on this dataset; excluded from ranking">0.494</td>
+<td class="benchmark-excluded" data-excluded="true" title="Trained on this dataset; excluded from ranking">0.120</td>
+<td class="benchmark-excluded" data-excluded="true" title="Trained on this dataset; excluded from ranking">0.289</td>
+<td class="benchmark-excluded" data-excluded="true" title="Trained on this dataset; excluded from ranking">0.475</td>
+</tr>
+</tbody></table></div>
+                      </div>
+                      <div class="intrinsics-benchmark-panel">
+                        <h6>Stanford2D3D</h6>
+<div class="finding-table-scroll" role="region" tabindex="0" aria-label="Stanford2D3D intrinsics benchmark results; scroll horizontally if needed">
+<table class="finding-data-table benchmark-data-table intrinsics-benchmark-table" data-source-label="tab:fov_bench" data-dataset="Stanford2D3D">
+<caption class="sr-only">Stanford2D3D intrinsics benchmark results</caption>
+<thead><tr><th scope="col" rowspan="2">Model</th>
+<th scope="colgroup" colspan="3">vFoV</th>
+<th scope="colgroup" colspan="3">hFoV</th>
+</tr><tr>
+<th scope="col">@1°</th>
+<th scope="col">@5°</th>
+<th scope="col">@10°</th>
+<th scope="col">@1°</th>
+<th scope="col">@5°</th>
+<th scope="col">@10°</th>
+</tr></thead><tbody>
+<tr><th scope="row">Depth Pro</th>
+<td>0.058</td>
+<td>0.157</td>
+<td>0.263</td>
+<td>0.050</td>
+<td>0.134</td>
+<td>0.233</td>
+</tr>
+<tr><th scope="row">MoGe-2</th>
+<td class="place-1" data-place="1">0.094</td>
+<td class="place-1" data-place="1">0.269</td>
+<td class="place-1" data-place="1">0.487</td>
+<td class="place-1" data-place="1">0.087</td>
+<td class="place-1" data-place="1">0.249</td>
+<td class="place-1" data-place="1">0.454</td>
+</tr>
+<tr><th scope="row">MetricAnything</th>
+<td class="place-2" data-place="2">0.078</td>
+<td class="place-2" data-place="2">0.194</td>
+<td class="place-2" data-place="2">0.326</td>
+<td class="place-2" data-place="2">0.062</td>
+<td class="place-2" data-place="2">0.164</td>
+<td class="place-2" data-place="2">0.289</td>
+</tr>
+<tr><th scope="row">Unidepth</th>
+<td>0.032</td>
+<td>0.085</td>
+<td>0.172</td>
+<td>0.028</td>
+<td>0.077</td>
+<td>0.150</td>
+</tr>
+<tr><th scope="row">Unidepthv2</th>
+<td>0.048</td>
+<td>0.132</td>
+<td>0.247</td>
+<td>0.043</td>
+<td>0.116</td>
+<td>0.224</td>
+</tr>
+</tbody></table></div>
+                      </div>
+                      <div class="intrinsics-benchmark-panel">
+                        <h6>TartanAir</h6>
+<div class="finding-table-scroll" role="region" tabindex="0" aria-label="TartanAir intrinsics benchmark results; scroll horizontally if needed">
+<table class="finding-data-table benchmark-data-table intrinsics-benchmark-table" data-source-label="tab:fov_bench" data-dataset="TartanAir">
+<caption class="sr-only">TartanAir intrinsics benchmark results</caption>
+<thead><tr><th scope="col" rowspan="2">Model</th>
+<th scope="colgroup" colspan="3">vFoV</th>
+<th scope="colgroup" colspan="3">hFoV</th>
+</tr><tr>
+<th scope="col">@1°</th>
+<th scope="col">@5°</th>
+<th scope="col">@10°</th>
+<th scope="col">@1°</th>
+<th scope="col">@5°</th>
+<th scope="col">@10°</th>
+</tr></thead><tbody>
+<tr><th scope="row">Depth Pro</th>
+<td class="benchmark-excluded" data-excluded="true" title="Trained on this dataset; excluded from ranking">0.556</td>
+<td class="benchmark-excluded" data-excluded="true" title="Trained on this dataset; excluded from ranking">0.740</td>
+<td class="benchmark-excluded" data-excluded="true" title="Trained on this dataset; excluded from ranking">0.859</td>
+<td class="benchmark-excluded" data-excluded="true" title="Trained on this dataset; excluded from ranking">0.549</td>
+<td class="benchmark-excluded" data-excluded="true" title="Trained on this dataset; excluded from ranking">0.730</td>
+<td class="benchmark-excluded" data-excluded="true" title="Trained on this dataset; excluded from ranking">0.851</td>
+</tr>
+<tr><th scope="row">MoGe-2</th>
+<td class="benchmark-excluded" data-excluded="true" title="Trained on this dataset; excluded from ranking">0.009</td>
+<td class="benchmark-excluded" data-excluded="true" title="Trained on this dataset; excluded from ranking">0.080</td>
+<td class="benchmark-excluded" data-excluded="true" title="Trained on this dataset; excluded from ranking">0.314</td>
+<td class="benchmark-excluded" data-excluded="true" title="Trained on this dataset; excluded from ranking">0.009</td>
+<td class="benchmark-excluded" data-excluded="true" title="Trained on this dataset; excluded from ranking">0.074</td>
+<td class="benchmark-excluded" data-excluded="true" title="Trained on this dataset; excluded from ranking">0.303</td>
+</tr>
+<tr><th scope="row">MetricAnything</th>
+<td class="place-1" data-place="1">0.364</td>
+<td class="place-1" data-place="1">0.702</td>
+<td class="place-1" data-place="1">0.847</td>
+<td class="place-1" data-place="1">0.353</td>
+<td class="place-1" data-place="1">0.688</td>
+<td class="place-1" data-place="1">0.839</td>
+</tr>
+<tr><th scope="row">Unidepth</th>
+<td class="place-2" data-place="2">0.008</td>
+<td class="place-2" data-place="2">0.016</td>
+<td class="place-2" data-place="2">0.030</td>
+<td class="place-2" data-place="2">0.006</td>
+<td class="place-2" data-place="2">0.015</td>
+<td class="place-2" data-place="2">0.031</td>
+</tr>
+<tr><th scope="row">Unidepthv2</th>
+<td>0.000</td>
+<td>0.004</td>
+<td>0.093</td>
+<td>0.000</td>
+<td>0.004</td>
+<td>0.083</td>
+</tr>
+</tbody></table></div>
+                      </div>
+                    </div>
+                  </section>
+                </div>
+              </details>
+            </section>
+            <section class="finding-table-panel" aria-labelledby="gt-intrinsics-title">
+              <h4 id="gt-intrinsics-title">Image-level geometry estimation using ground-truth intrinsics</h4>
+              <p class="finding-table-note">Normal subset. Parentheses show changes relative to the corresponding image-level estimation results: <span class="improvement">green</span> for improvements and <span class="degradation">red</span> for degradations. AE is in meters; δ is in %.</p>
+              <div class="finding-table-scroll" role="region" tabindex="0" aria-label="Normal-subset results using ground-truth intrinsics; scroll horizontally if needed">
+                <table class="finding-data-table gt-intrinsics-table" data-source-label="tab:mono_gtfov_normal">
+                  <caption class="sr-only">Normal-subset results using ground-truth intrinsics. Parentheses show changes relative to the main image-level estimation table. AE in meters; delta accuracies in percent.</caption>
+                  <thead><tr><th scope="col">Model</th>
+                    <th scope="col">AE ↓</th>
+                    <th scope="col">RE ↓</th>
+                    <th scope="col">LE ↓</th>
+                    <th scope="col">RSD ↓</th>
+                    <th scope="col">δ<sub>1.05</sub> ↑</th>
+                    <th scope="col">δ<sub>1.10</sub> ↑</th>
+                    <th scope="col">δ<sub>1.25</sub> ↑</th>
+                    <th scope="col">Rank ↓</th>
+                  </tr></thead><tbody>
+                    <tr><th scope="row">Metric3D</th><td data-change="+0.139" data-direction="degradation"><span class="finding-cell-value">1.319</span> <span class="finding-cell-change degradation" aria-label="degradation: +0.139">(+0.139)</span></td><td data-change="+0.200" data-direction="degradation"><span class="finding-cell-value">1.895</span> <span class="finding-cell-change degradation" aria-label="degradation: +0.200">(+0.200)</span></td><td data-change="+0.065" data-direction="degradation"><span class="finding-cell-value">0.893</span> <span class="finding-cell-change degradation" aria-label="degradation: +0.065">(+0.065)</span></td><td data-change="-0.007" data-direction="improvement"><span class="finding-cell-value">0.340</span> <span class="finding-cell-change improvement" aria-label="improvement: -0.007">(-0.007)</span></td><td data-change="-2.86" data-direction="degradation"><span class="finding-cell-value">5.16</span> <span class="finding-cell-change degradation" aria-label="degradation: -2.86">(-2.86)</span></td><td data-change="-4.79" data-direction="degradation"><span class="finding-cell-value">9.89</span> <span class="finding-cell-change degradation" aria-label="degradation: -4.79">(-4.79)</span></td><td data-change="-4.40" data-direction="degradation"><span class="finding-cell-value">23.42</span> <span class="finding-cell-change degradation" aria-label="degradation: -4.40">(-4.40)</span></td><td><span class="finding-cell-value">8.00</span></td></tr>
+                    <tr><th scope="row">Depth Pro</th><td data-change="+0.009" data-direction="degradation"><span class="finding-cell-value">0.144</span> <span class="finding-cell-change degradation" aria-label="degradation: +0.009">(+0.009)</span></td><td data-change="+0.014" data-direction="degradation"><span class="finding-cell-value">0.210</span> <span class="finding-cell-change degradation" aria-label="degradation: +0.014">(+0.014)</span></td><td data-change="+0.006" data-direction="degradation"><span class="finding-cell-value">0.240</span> <span class="finding-cell-change degradation" aria-label="degradation: +0.006">(+0.006)</span></td><td data-change="+0.021" data-direction="degradation"><span class="finding-cell-value">0.175</span> <span class="finding-cell-change degradation" aria-label="degradation: +0.021">(+0.021)</span></td><td data-change="-1.21" data-direction="degradation"><span class="finding-cell-value">16.53</span> <span class="finding-cell-change degradation" aria-label="degradation: -1.21">(-1.21)</span></td><td data-change="-1.30" data-direction="degradation"><span class="finding-cell-value">31.68</span> <span class="finding-cell-change degradation" aria-label="degradation: -1.30">(-1.30)</span></td><td data-change="-2.53" data-direction="degradation"><span class="finding-cell-value">62.77</span> <span class="finding-cell-change degradation" aria-label="degradation: -2.53">(-2.53)</span></td><td><span class="finding-cell-value">5.14</span></td></tr>
+                    <tr><th scope="row">Unidepth</th><td data-change="+0.046" data-direction="degradation"><span class="finding-cell-value">0.205</span> <span class="finding-cell-change degradation" aria-label="degradation: +0.046">(+0.046)</span></td><td data-change="+0.067" data-direction="degradation"><span class="finding-cell-value">0.287</span> <span class="finding-cell-change degradation" aria-label="degradation: +0.067">(+0.067)</span></td><td data-change="+0.039" data-direction="degradation"><span class="finding-cell-value">0.246</span> <span class="finding-cell-change degradation" aria-label="degradation: +0.039">(+0.039)</span></td><td data-change="-0.013" data-direction="improvement"><span class="finding-cell-value">0.121</span> <span class="finding-cell-change improvement" aria-label="improvement: -0.013">(-0.013)</span></td><td data-change="-5.32" data-direction="degradation"><span class="finding-cell-value">14.68</span> <span class="finding-cell-change degradation" aria-label="degradation: -5.32">(-5.32)</span></td><td data-change="-11.16" data-direction="degradation"><span class="finding-cell-value">27.22</span> <span class="finding-cell-change degradation" aria-label="degradation: -11.16">(-11.16)</span></td><td data-change="-15.89" data-direction="degradation"><span class="finding-cell-value">52.55</span> <span class="finding-cell-change degradation" aria-label="degradation: -15.89">(-15.89)</span></td><td><span class="finding-cell-value">6.86</span></td></tr>
+                    <tr><th scope="row">MoGe-2</th><td data-change="-0.004" data-direction="improvement"><span class="finding-cell-value">0.172</span> <span class="finding-cell-change improvement" aria-label="improvement: -0.004">(-0.004)</span></td><td data-change="-0.013" data-direction="improvement"><span class="finding-cell-value">0.229</span> <span class="finding-cell-change improvement" aria-label="improvement: -0.013">(-0.013)</span></td><td data-change="+0.004" data-direction="degradation"><span class="finding-cell-value">0.208</span> <span class="finding-cell-change degradation" aria-label="degradation: +0.004">(+0.004)</span></td><td data-change="+0.009" data-direction="degradation"><span class="finding-cell-value">0.095</span> <span class="finding-cell-change degradation" aria-label="degradation: +0.009">(+0.009)</span></td><td data-change="-6.40" data-direction="degradation"><span class="finding-cell-value">17.00</span> <span class="finding-cell-change degradation" aria-label="degradation: -6.40">(-6.40)</span></td><td data-change="-9.43" data-direction="degradation"><span class="finding-cell-value">31.50</span> <span class="finding-cell-change degradation" aria-label="degradation: -9.43">(-9.43)</span></td><td data-change="-0.79" data-direction="degradation"><span class="finding-cell-value">62.29</span> <span class="finding-cell-change degradation" aria-label="degradation: -0.79">(-0.79)</span></td><td><span class="finding-cell-value">4.86</span></td></tr>
+                    <tr><th scope="row">MoGe-3</th><td data-change="-0.023" data-direction="improvement"><span class="finding-cell-value">0.185</span> <span class="finding-cell-change improvement" aria-label="improvement: -0.023">(-0.023)</span></td><td data-change="-0.039" data-direction="improvement"><span class="finding-cell-value">0.253</span> <span class="finding-cell-change improvement" aria-label="improvement: -0.039">(-0.039)</span></td><td data-change="-0.016" data-direction="improvement"><span class="finding-cell-value">0.220</span> <span class="finding-cell-change improvement" aria-label="improvement: -0.016">(-0.016)</span></td><td data-change="+0.009" data-direction="degradation"><span class="finding-cell-value">0.093</span> <span class="finding-cell-change degradation" aria-label="degradation: +0.009">(+0.009)</span></td><td data-change="-1.70" data-direction="degradation"><span class="finding-cell-value">17.19</span> <span class="finding-cell-change degradation" aria-label="degradation: -1.70">(-1.70)</span></td><td data-change="-1.81" data-direction="degradation"><span class="finding-cell-value">33.68</span> <span class="finding-cell-change degradation" aria-label="degradation: -1.81">(-1.81)</span></td><td data-change="+3.45" data-direction="improvement"><span class="finding-cell-value">63.34</span> <span class="finding-cell-change improvement" aria-label="improvement: +3.45">(+3.45)</span></td><td><span class="finding-cell-value">4.43</span></td></tr>
+                    <tr><th scope="row">MetricAnything</th><td data-change="+0.005" data-direction="degradation"><span class="finding-cell-value">0.150</span> <span class="finding-cell-change degradation" aria-label="degradation: +0.005">(+0.005)</span></td><td data-change="+0.001" data-direction="degradation"><span class="finding-cell-value">0.195</span> <span class="finding-cell-change degradation" aria-label="degradation: +0.001">(+0.001)</span></td><td data-change="+0.007" data-direction="degradation"><span class="finding-cell-value">0.183</span> <span class="finding-cell-change degradation" aria-label="degradation: +0.007">(+0.007)</span></td><td data-change="+0.009" data-direction="degradation"><span class="finding-cell-value">0.098</span> <span class="finding-cell-change degradation" aria-label="degradation: +0.009">(+0.009)</span></td><td data-change="-4.81" data-direction="degradation"><span class="finding-cell-value">20.19</span> <span class="finding-cell-change degradation" aria-label="degradation: -4.81">(-4.81)</span></td><td data-change="-3.94" data-direction="degradation"><span class="finding-cell-value">37.34</span> <span class="finding-cell-change degradation" aria-label="degradation: -3.94">(-3.94)</span></td><td data-change="-0.10" data-direction="degradation"><span class="finding-cell-value">66.86</span> <span class="finding-cell-change degradation" aria-label="degradation: -0.10">(-0.10)</span></td><td><span class="finding-cell-value">3.29</span></td></tr>
+                    <tr><th scope="row">Unidepthv2</th><td data-change="+0.022" data-direction="degradation"><span class="finding-cell-value">0.121</span> <span class="finding-cell-change degradation" aria-label="degradation: +0.022">(+0.022)</span></td><td data-change="+0.029" data-direction="degradation"><span class="finding-cell-value">0.165</span> <span class="finding-cell-change degradation" aria-label="degradation: +0.029">(+0.029)</span></td><td data-change="+0.016" data-direction="degradation"><span class="finding-cell-value">0.153</span> <span class="finding-cell-change degradation" aria-label="degradation: +0.016">(+0.016)</span></td><td data-change="+0.001" data-direction="degradation"><span class="finding-cell-value">0.098</span> <span class="finding-cell-change degradation" aria-label="degradation: +0.001">(+0.001)</span></td><td data-change="-2.43" data-direction="degradation"><span class="finding-cell-value">23.58</span> <span class="finding-cell-change degradation" aria-label="degradation: -2.43">(-2.43)</span></td><td data-change="-5.47" data-direction="degradation"><span class="finding-cell-value">43.01</span> <span class="finding-cell-change degradation" aria-label="degradation: -5.47">(-5.47)</span></td><td data-change="-4.20" data-direction="degradation"><span class="finding-cell-value">75.41</span> <span class="finding-cell-change degradation" aria-label="degradation: -4.20">(-4.20)</span></td><td><span class="finding-cell-value">2.29</span></td></tr>
+                    <tr><th scope="row">Metric3D v2</th><td data-change="+0.022" data-direction="degradation"><span class="finding-cell-value">0.095</span> <span class="finding-cell-change degradation" aria-label="degradation: +0.022">(+0.022)</span></td><td data-change="+0.032" data-direction="degradation"><span class="finding-cell-value">0.138</span> <span class="finding-cell-change degradation" aria-label="degradation: +0.032">(+0.032)</span></td><td data-change="+0.022" data-direction="degradation"><span class="finding-cell-value">0.126</span> <span class="finding-cell-change degradation" aria-label="degradation: +0.022">(+0.022)</span></td><td data-change="-0.001" data-direction="improvement"><span class="finding-cell-value">0.067</span> <span class="finding-cell-change improvement" aria-label="improvement: -0.001">(-0.001)</span></td><td data-change="-4.91" data-direction="degradation"><span class="finding-cell-value">26.09</span> <span class="finding-cell-change degradation" aria-label="degradation: -4.91">(-4.91)</span></td><td data-change="-8.06" data-direction="degradation"><span class="finding-cell-value">47.94</span> <span class="finding-cell-change degradation" aria-label="degradation: -8.06">(-8.06)</span></td><td data-change="-6.44" data-direction="degradation"><span class="finding-cell-value">83.98</span> <span class="finding-cell-change degradation" aria-label="degradation: -6.44">(-6.44)</span></td><td><span class="finding-cell-value">1.00</span></td></tr>
+                  </tbody></table></div>
+            </section>
+          </div>
+<!-- END FINDING ONE TABLES -->
+        </article>
+        <div class="finding-group" id="findings-robustness">
+          <div class="findings-grid findings-grid-two">
+            <article class="finding finding-card" id="finding-2" aria-labelledby="finding-2-title">
+              <div class="finding-copy"><p class="finding-index">Finding 2</p><h4 id="finding-2-title">Sensor depth versus learned 3D foundation models.</h4><p class="finding-statement">Raw sensor depth is highly reliable on benign surfaces, but under challenging sensing conditions learned 3D foundation models are far more robust and surpass it.</p></div>
+              <figure class="finding-figure"><a class="figure-link" href="assets/images/findings/sensor-comparison.webp" data-lightbox aria-label="Enlarge: Sensor comparison: raw RealSense D435 versus image-level estimation and completion models"><img src="assets/images/findings/sensor-comparison.webp" alt="Sensor comparison: raw RealSense D435 versus image-level estimation and completion models" width="1700" height="1618" loading="lazy" decoding="async"></a><figcaption>Normal-scene δ<sub>1.05</sub> and challenging-scene RE. Dashed lines mark the raw sensor baseline.</figcaption></figure>
+            </article>
+            <article class="finding finding-card" id="finding-3" aria-labelledby="finding-3-title">
+              <div class="finding-copy"><p class="finding-index">Finding 3</p><h4 id="finding-3-title">Distinct robustness patterns of estimation and completion.</h4><p class="finding-statement">Completion and estimation models exhibit distinct robustness patterns: the former attains higher peak accuracy but degrades catastrophically on challenging scenes, the latter keeps errors bounded throughout.</p></div>
+              <figure class="finding-figure"><a class="figure-link" href="assets/images/findings/model-robustness.webp" data-lightbox aria-label="Enlarge: Robustness comparison of estimation and completion, including both plots and their legends"><img src="assets/images/findings/model-robustness.webp" alt="Robustness comparison of estimation and completion, including both plots and their legends" width="1701" height="1532" loading="lazy" decoding="async"></a><figcaption>Challenging-to-normal RE ratios (left) and multi-view accuracy across scene difficulty (right).</figcaption></figure>
+            </article>
+          </div>
+        </div>
+        <div class="finding-group" id="findings-priors">
+          <div class="findings-grid findings-grid-three">
+            <article class="finding finding-card" id="finding-4" aria-labelledby="finding-4-title">
+              <div class="finding-copy"><p class="finding-index">Finding 4</p><h4 id="finding-4-title">Sparsely-sampled depth prior for image-level estimation models.</h4><p class="finding-statement">Geometry completion requires jointly addressing input sparsity and sensor noise; consequently, denser depth priors do not necessarily yield better performance.</p></div>
+              <figure class="finding-figure"><a class="figure-link" href="assets/images/findings/sparse-depth.webp" data-lightbox aria-label="Enlarge: Image-level completion accuracy versus sparse depth input density"><img src="assets/images/findings/sparse-depth.webp" alt="Image-level completion accuracy versus sparse depth input density" width="1400" height="1429" loading="lazy" decoding="async"></a><figcaption>Image-level completion with 100, 1,000, 10,000, or all sensor-depth points.</figcaption></figure>
+            </article>
+            <article class="finding finding-card" id="finding-5" aria-labelledby="finding-5-title">
+              <div class="finding-copy"><p class="finding-index">Finding 5</p><h4 id="finding-5-title">Offering models with different numbers of depth priors.</h4><p class="finding-statement">Additional depth priors generally improve video-level completion, but the benefit depends on the model&#x27;s ability to integrate metric information across views.</p></div>
+              <figure class="finding-figure"><a class="figure-link" href="assets/images/findings/prior-views.webp" data-lightbox aria-label="Enlarge: Video-level completion relative error versus the depth-prior view ratio"><img src="assets/images/findings/prior-views.webp" alt="Video-level completion relative error versus the depth-prior view ratio" width="1401" height="1356" loading="lazy" decoding="async"></a><figcaption>Video-level completion as the fraction of views with depth priors increases.</figcaption></figure>
+            </article>
+            <article class="finding finding-card" id="finding-6" aria-labelledby="finding-6-title">
+              <div class="finding-copy"><p class="finding-index">Finding 6</p><h4 id="finding-6-title">Comparison across model settings.</h4><p class="finding-statement">Multi-view estimation improves consistency, depth-conditioned completion improves both accuracy and consistency, and combining both performs best overall.</p></div>
+              <figure class="finding-figure"><a class="figure-link" href="assets/images/findings/model-settings.webp" data-lightbox aria-label="Enlarge: Relative error versus relative standard deviation for four representative model settings"><img src="assets/images/findings/model-settings.webp" alt="Relative error versus relative standard deviation for four representative model settings" width="1401" height="1393" loading="lazy" decoding="async"></a><figcaption>Representative settings on normal scenes. Lower RE and RSD are better.</figcaption></figure>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section qualitative-section" id="qualitative-results" aria-labelledby="qualitative-title">
+      <div class="container">
+        <div class="section-heading"><h2 id="qualitative-title">Qualitative Results</h2></div>
+        <div class="results-carousel qualitative-carousel" role="region" aria-roledescription="carousel" aria-label="Qualitative result figures" data-item-label="Figure" tabindex="0">
+          <button type="button" class="carousel-arrow previous" aria-label="Previous qualitative figure" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m16 3-12 9 12 9Z"/></svg></button>
+          <div class="carousel-viewport">
+<!-- BEGIN QUALITATIVE FIGURES -->
+            <article class="qualitative-slide" id="qualitative-intrinsics" aria-labelledby="qualitative-intrinsics-title" data-slide="0">
+              <div class="slide-heading"><h3 id="qualitative-intrinsics-title">Ground-truth versus predicted intrinsics</h3></div>
+              <figure class="qualitative-figure">
+                <a class="figure-link" href="assets/images/qualitative/intrinsics.webp" data-lightbox aria-label="Enlarge: Ground-truth versus predicted intrinsics"><img src="assets/images/qualitative/intrinsics.webp" alt="Ground-truth versus predicted intrinsics" width="2600" height="1964" loading="lazy" decoding="async"></a>
+                <figcaption><strong>Qualitative comparison for image-level geometry estimation models between back-projecting with ground-truth intrinsics and models&#x27; predicted intrinsics.</strong> Ground-truth annotations are shown in red, (ground-truth intrinsics + depth maps) are shown in blue, (predicted intrinsics + depth maps) are shown in yellow.</figcaption>
+              </figure>
+            </article>
+            <article class="qualitative-slide" id="qualitative-sparse-priors" aria-labelledby="qualitative-sparse-priors-title" data-slide="1">
+              <div class="slide-heading"><h3 id="qualitative-sparse-priors-title">Image-level completion with sparse depth priors</h3></div>
+              <figure class="qualitative-figure">
+                <a class="figure-link" href="assets/images/qualitative/sparse-priors.webp" data-lightbox aria-label="Enlarge: Image-level completion with sparse depth priors"><img src="assets/images/qualitative/sparse-priors.webp" alt="Image-level completion with sparse depth priors" width="2600" height="1474" loading="lazy" decoding="async"></a>
+                <figcaption><strong>Qualitative comparison for image-level geometry completion models on different prior depth patterns with varying sparsity levels.</strong> The results showcase that Lingbot-Depth and PriorDA perform robustly under different patterns, while CDM-L515 exhibits a substantial performance drop due to the large pattern domain gap between its training data and the evaluated prior patterns.</figcaption>
+              </figure>
+            </article>
+            <article class="qualitative-slide" id="qualitative-prior-views" aria-labelledby="qualitative-prior-views-title" data-slide="2">
+              <div class="slide-heading"><h3 id="qualitative-prior-views-title">Video-level completion with partial depth priors</h3></div>
+              <figure class="qualitative-figure">
+                <a class="figure-link" href="assets/images/qualitative/prior-views.webp" data-lightbox aria-label="Enlarge: Video-level completion with partial depth priors"><img src="assets/images/qualitative/prior-views.webp" alt="Video-level completion with partial depth priors" width="2600" height="1689" loading="lazy" decoding="async"></a>
+                <figcaption><strong>Qualitative results for MapAnything with varying fractions of views provided with depth priors.</strong> The distance of “Sensor Captured” is obtained by averaging the sensor measured distances of the ten views sampled. The results demonstrate that, as the ratio of depth priors increased, MapAnything gains continuous performance improvement. “Ratio#x” indicates the ratio of prior input to the model.</figcaption>
+              </figure>
+            </article>
+<!-- END QUALITATIVE FIGURES -->
+          </div>
+          <button type="button" class="carousel-arrow next" aria-label="Next qualitative figure" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 3 12 9-12 9Z"/></svg></button>
+        </div>
+        <div class="carousel-footer" hidden><div class="carousel-dots" role="group" aria-label="Qualitative figure pages"><button type="button" data-goto="0" aria-label="Figure 1: Ground-truth versus predicted intrinsics" aria-current="true"></button><button type="button" data-goto="1" aria-label="Figure 2: Image-level completion with sparse depth priors"></button><button type="button" data-goto="2" aria-label="Figure 3: Video-level completion with partial depth priors"></button></div><p class="sr-only carousel-status" aria-live="polite" aria-atomic="true"></p></div>
+      </div>
+    </section>
+    <section class="section citation-section" id="BibTeX" aria-labelledby="citation-title">
+      <div class="container">
+        <h2 id="citation-title">Citation</h2>
+        <pre class="citation-code" aria-label="Citation"><code></code></pre>
+      </div>
+    </section>
+  </main>
+
+  <dialog class="figure-dialog" aria-label="Enlarged paper figure"><form method="dialog"><button class="dialog-close" aria-label="Close enlarged figure" autofocus>×</button></form><div class="dialog-image-scroll"><img alt=""></div><p class="dialog-caption"></p></dialog>
+</body>
+</html>
